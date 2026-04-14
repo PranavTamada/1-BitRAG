@@ -1,6 +1,6 @@
 from utils.normalize import min_max_normalize
 
-def fuse_results(docs_dense, scores_dense, docs_sparse, scores_sparse, k=5):
+def fuse_scores(docs_dense, scores_dense, docs_sparse, scores_sparse, k=5):
     # Normalize scores
     scores_dense = min_max_normalize(scores_dense)
     scores_sparse = min_max_normalize(scores_sparse)

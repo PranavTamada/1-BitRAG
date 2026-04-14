@@ -1,5 +1,5 @@
 import json
-from "C:\Users\prana\OneDrive\Desktop\1-bit LLM\rag_project\retriever\retrieve.py" import retrieve
+from retriever.retrieve import retrieve
 from llm.cheap_llm import run_cheap_llm
 from llm.full_llm import run_full_llm
 from utils.prompt import build_prompt

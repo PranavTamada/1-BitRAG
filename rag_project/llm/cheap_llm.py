@@ -1,6 +1,5 @@
 import ollama
 import time
-
 def run_cheap_llm(prompt):
     start = time.time()
 
@@ -10,5 +9,4 @@ def run_cheap_llm(prompt):
     )
 
     latency = time.time() - start
-
     return response['message']['content'], latency

@@ -2,7 +2,7 @@ from sentence_transformers import SentenceTransformer
 import faiss
 import numpy as np
 
-class DenseRetriever:
+class dense_retrieve:
     def __init__(self, documents):
         self.model = SentenceTransformer('all-MiniLM-L6-v2')
         self.documents = documents

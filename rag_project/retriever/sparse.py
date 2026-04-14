@@ -1,6 +1,6 @@
 from rank_bm25 import BM25Okapi
 
-class SparseRetriever:
+class sparse_retrieve:
     def __init__(self, documents):
         self.documents = documents
         self.tokenized_docs = [doc.split() for doc in documents]
