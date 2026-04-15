@@ -1,7 +1,7 @@
 import json
 from retriever.dense import DenseRetriever
 from retriever.sparse import SparseRetriever
-from retriever.fusion import fuse_results
+from retriever.retrieve import retrieve
 from utils.logger import log_results
 
 # Load dataset
@@ -17,33 +17,27 @@ def main():
     documents = [item["context"] for item in data]
     queries = [item["query"] for item in data]
 
-    # Initialize retrievers
+    # Initialize retrievers once
     dense = DenseRetriever(documents)
     sparse = SparseRetriever(documents)
 
     all_logs = []
 
     for query in queries:
-        docs_dense, scores_dense = dense.search(query)
-        docs_sparse, scores_sparse = sparse.search(query)
-
-        fused_docs, fused_scores = fuse_results(
-            docs_dense, scores_dense,
-            docs_sparse, scores_sparse
-        )
+        docs, fused_scores = retrieve(query, documents, dense, sparse, top_k=5)
 
         log_entry = {
             "query": query,
-            "dense_scores": scores_dense,
-            "sparse_scores": scores_sparse,
             "fused_scores": fused_scores,
-            "docs": fused_docs
+            "docs": docs
         }
 
         all_logs.append(log_entry)
 
     log_results(all_logs)
-    docs, scores = dense.search("Who wrote Harry Potter?")
+
+    # Quick test
+    docs, scores = retrieve("Who wrote Harry Potter?", documents, dense, sparse, top_k=5)
     print(docs)
     print(scores)
 

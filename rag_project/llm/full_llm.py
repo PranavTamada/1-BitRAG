@@ -1,9 +1,9 @@
 import google.generativeai as genai
 import time
 
-genai.configure(api_key="YOUR_GEMINI_API_KEY")
+genai.configure(api_key="AIzaSyBrOSOAjGI305EKvq0fNsdUXmeVD0DTFYk")
 
-model = genai.GenerativeModel("gemini-1.5-flash")
+model = genai.GenerativeModel("gemini-2.5-flash-lite")
 
 def run_full_llm(prompt):
     start = time.time()

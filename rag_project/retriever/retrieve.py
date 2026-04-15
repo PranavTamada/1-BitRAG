@@ -1,25 +1,46 @@
-from retriever.dense import dense_retrieve
-from retriever.sparse import sparse_retrieve
+from retriever.dense import DenseRetriever
+from retriever.sparse import SparseRetriever
 from retriever.fusion import fuse_scores
 
+def retrieve(query, documents, dense_retriever, sparse_retriever, top_k=5):
+    """Hybrid retrieval: dense + sparse → union → fuse → top-k.
 
-def retrieve(query, top_k=3):
-    # 1. Dense retrieval
-    dense_docs, dense_scores = dense_retrieve(query, top_k)
+    Args:
+        query: the search query string
+        documents: list of corpus text strings (used to map indices → text)
+        dense_retriever: pre-initialized DenseRetriever instance
+        sparse_retriever: pre-initialized SparseRetriever instance
+        top_k: number of final results to return
 
-    # 2. Sparse retrieval
-    sparse_docs, sparse_scores = sparse_retrieve(query, top_k)
+    Returns:
+        (docs, scores): lists of top-k document texts and fused scores
+    """
+    # --- Step 1: Dense retrieval (top candidates) ---
+    dense_results = dense_retriever.search(query, k=top_k)
 
-    # 3. Combine docs (assuming same ordering or already aligned)
-    docs = dense_docs  # or merge if different
+    # --- Step 2: Sparse retrieval (top candidates) ---
+    sparse_results = sparse_retriever.search(query, k=top_k)
 
-    # 4. Fuse scores
-    fused_scores = fuse_scores(dense_scores, sparse_scores)
+    # --- Step 3: Union of candidate document indices ---
+    candidate_indices = set()
+    for idx, _ in dense_results:
+        candidate_indices.add(idx)
+    for idx, _ in sparse_results:
+        candidate_indices.add(idx)
 
-    # 5. Sort by fused score
-    sorted_indices = sorted(range(len(fused_scores)), key=lambda i: fused_scores[i], reverse=True)
+    # --- Step 4: Score every candidate in BOTH systems ---
+    dense_scores_dict = {}
+    sparse_scores_dict = {}
 
-    top_docs = [docs[i] for i in sorted_indices[:top_k]]
-    top_scores = [fused_scores[i] for i in sorted_indices[:top_k]]
+    for idx in candidate_indices:
+        dense_scores_dict[idx] = dense_retriever.score_document(query, idx)
+        sparse_scores_dict[idx] = sparse_retriever.score_document(query, idx)
 
-    return top_docs, top_scores
+    # --- Steps 5-7: Normalize, fuse, and sort (handled by fuse_scores) ---
+    fused_results = fuse_scores(dense_scores_dict, sparse_scores_dict, k=top_k)
+
+    # --- Step 8: Map indices back to document text ---
+    docs = [documents[idx] for idx, _ in fused_results]
+    scores = [score for _, score in fused_results]
+
+    return docs, scores

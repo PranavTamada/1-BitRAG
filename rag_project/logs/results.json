@@ -1,0 +1,22 @@
+[
+    {
+        "query": "Which magazine was started first Arthur's Magazine or First for Women?",
+        "docs": [
+            "The first women's magazine was published in Malaysia in 1932.  In the 2000s there were nearly fifty local titles addressing women in the country.  These magazines also include those having an Islamic perspective.  Some international women's magazines are also published in Malaysia.  One of them is \"Elle Malaysia\", which was first published in March 2014.  Another one, \"Women\u2019s Health\", was started in April 2015.  Comic magazines and film magazines are also common in Malaysia. First for Women is ",
+            "Driven was a Canadian men's lifestyle magazine, started in 2004 by publisher Michel Cr\u00e9pault based on a concept presented and developed by former editor-in-chief Michael La Fave and creative director Laurance Yap.  \"Driven\" was published six times a year.  It offered a combination of automotive, fashion, technology, travel and leisure content for affluent Canadian men featuring exotic locations and automobiles.  The headquarters of the magazine was in Toronto.  In 2007 the magazine became the be",
+            "Radio City is India's first private FM radio station and was started on 3 July 2001.  It broadcasts on 91.1 (earlier 91.0 in most cities) megahertz from Mumbai (where it was started in 2004), Bengaluru (started first in 2001), Lucknow and New Delhi (since 2003).  It plays Hindi, English and regional songs.  It was launched in Hyderabad in March 2006, in Chennai on 7 July 2006 and in Visakhapatnam October 2007.  Radio City recently forayed into New Media in May 2008 with the launch of a music por"
+        ],
+        "scores": [
+            0.03278688524590164,
+            0.03225806451612903,
+            0.03149801587301587
+        ],
+        "cheap_answer": "Driven was a Canadian men's lifestyle magazine, published by publisher Michel Cr\u00e9pault and based on a concept presented and developed by former editor-in-chief Michael La Faive and creative director Laura NCe. It offered a combination of automotive, fashion, technology, travel, and lifestyle content for affluent Canadian men featuring exotic locations and automobiles, becoming the first private FM radio station in India in 2001 and broadcasting on 91.1 megahertz in Mumbai (earlier 91.0), Bengaluru (started in 2004), Luckeno, and New Delhi (since 2003). It was launched as Radio City in Hyderabad in March 2006 and Visakhapatnam on October 2007.",
+        "cheap_confidence": 0.777,
+        "escalated_to_full": true,
+        "full_answer": "The context does not contain information about \"Arthur's Magazine\" or when \"First for Women\" was started. Therefore, I cannot answer the question.",
+        "final_answer": "The context does not contain information about \"Arthur's Magazine\" or when \"First for Women\" was started. Therefore, I cannot answer the question.",
+        "cheap_latency": 1.8720109462738037,
+        "full_latency": 1.4353842735290527
+    }
+]
