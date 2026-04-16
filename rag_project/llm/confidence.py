@@ -188,12 +188,21 @@ def compute_confidence(answer: str, query: str = "") -> float:
 
     return max(0.0, min(1.0, raw * length_factor * echo_factor))
 
+def compute_retrieval_signals(scores):
+    if len(scores) < 2:
+        return 0, 0, 0
+    
+    gap = scores[0] - scores[1]
+    mean = sum(scores) / len(scores)
+    variance = sum((s - mean)**2 for s in scores) / len(scores)
+
+    return gap, mean, variance
 
 def needs_full_llm(
     fused_scores,          # list of (doc_index, fused_score) from fuse_scores()
     llm_confidence,        # float from cheap answerer
-    retrieval_threshold=0.2,
-    confidence_threshold=0.7,
+    retrieval_threshold=0.275,
+    confidence_threshold=0.65,
     top_k=3
 ):
     """
@@ -203,7 +212,7 @@ def needs_full_llm(
     """
     # Average the top-k retrieval scores as a quality signal
     top_scores = [score for score in fused_scores[:top_k]]
-    avg_retrieval_score = sum(top_scores) / len(top_scores) if top_scores else 0.0
+    avg_retrieval_score = compute_retrieval_signals(top_scores)
 
     retrieval_ok = avg_retrieval_score >= retrieval_threshold
     confidence_ok = llm_confidence >= confidence_threshold

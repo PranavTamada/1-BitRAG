@@ -25,7 +25,7 @@ results = []
 full_llm_calls = 0
 total_queries = 0
 
-for sample in tqdm(dataset[:10]):   # 10 queries
+for sample in tqdm(dataset[5:8]):   # 10 queries
     query = sample["query"]
     total_queries += 1
 
@@ -58,14 +58,13 @@ for sample in tqdm(dataset[:10]):   # 10 queries
         "docs": docs,
         "scores": scores,
         "cheap_answer": cheap_answer,
-        "cheap_confidence": round(confidence, 3),
+        "cheap_confidence": confidence,
         "escalated_to_full": escalated,
         "full_answer": full_answer,
         "final_answer": final_answer,
         "cheap_latency": cheap_latency,
         "full_latency": full_latency
     })
-    break
 
 # Save results
 with open("logs/results.json", "w") as f:

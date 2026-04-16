@@ -10,8 +10,8 @@ def fuse_scores(dense_scores_dict, sparse_scores_dict, k=5):
     all_indices = set(dense_scores_dict.keys()) | set(sparse_scores_dict.keys())
 
     fused = []
-    # RRF constant (k=60 is the gold standard used in research papers like Cormack et al.)
-    rrf_constant = 60
+    # RRF constant (k=50 is the gold standard used in research papers like Cormack et al.)
+    rrf_constant = 50
 
     for idx in all_indices:
         # Get ranks; if an index is missing from a ranker, it contributes 0 to the score

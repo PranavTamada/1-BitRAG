@@ -1,22 +1,42 @@
 [
     {
-        "query": "Which magazine was started first Arthur's Magazine or First for Women?",
+        "query": " What nationality was James Henry Miller's wife?",
         "docs": [
-            "The first women's magazine was published in Malaysia in 1932.  In the 2000s there were nearly fifty local titles addressing women in the country.  These magazines also include those having an Islamic perspective.  Some international women's magazines are also published in Malaysia.  One of them is \"Elle Malaysia\", which was first published in March 2014.  Another one, \"Women\u2019s Health\", was started in April 2015.  Comic magazines and film magazines are also common in Malaysia. First for Women is ",
-            "Driven was a Canadian men's lifestyle magazine, started in 2004 by publisher Michel Cr\u00e9pault based on a concept presented and developed by former editor-in-chief Michael La Fave and creative director Laurance Yap.  \"Driven\" was published six times a year.  It offered a combination of automotive, fashion, technology, travel and leisure content for affluent Canadian men featuring exotic locations and automobiles.  The headquarters of the magazine was in Toronto.  In 2007 the magazine became the be",
-            "Radio City is India's first private FM radio station and was started on 3 July 2001.  It broadcasts on 91.1 (earlier 91.0 in most cities) megahertz from Mumbai (where it was started in 2004), Bengaluru (started first in 2001), Lucknow and New Delhi (since 2003).  It plays Hindi, English and regional songs.  It was launched in Hyderabad in March 2006, in Chennai on 7 July 2006 and in Visakhapatnam October 2007.  Radio City recently forayed into New Media in May 2008 with the launch of a music por"
+            "James Stuart, 3rd Earl of Moray (1581 \u2013 6 August 1638) was the son of James Stewart, 2nd Earl of Moray and Elizabeth Stuart, 2nd Countess of Moray. Charlotte of the Palatinate (\"Princess Palatine Charlotte\", 19 December 1628 \u2013 14 January 1631), was the fourth daughter of Frederick V, Elector Palatine (of the House of Wittelsbach), the \"Winter King\" of Bohemia, by his consort, the English princess Elizabeth Stuart.  Charlotte was born up in the Dutch Republic, where her family had sought refuge a",
+            "Moloch: or, This Gentile World is a semi-autobiographical novel written by Henry Miller in 1927-28, initially under the guise of a novel written by his wife, June.  The book went unpublished until 1992, 65 years after it was written and 12 years after Miller\u2019s death.  It is widely considered to be of interest more as a study of Miller\u2019s artistic growth than as a worthy piece of fiction. The Launceston by-election of 1874 was fought on 3 July 1874.  The byelection was fought due to the void Elect",
+            "Brigadier Claud Andrew Montagu Douglas Scott, DSO (13 July 1906 \u2013 24 January 1971) was the first child and only son born to Lieutenant Colonel Lord Herbert Andrew Montagu Douglas Scott and Marie Josephine Edwards.  He was a grandson of Sir William Henry Walter Montagu Douglas Scott, 6th Duke of Buccleuch & 8th Duke of Queensberry and Lady Louisa Jane Hamilton, and a paternal first cousin to Lady Alice, Duchess of Gloucester, later known as Princess Alice, Duchess of Gloucester.  He was a materna"
         ],
         "scores": [
-            0.03278688524590164,
-            0.03225806451612903,
-            0.03149801587301587
+            0.038838612368024134,
+            0.038475767665556784,
+            0.03774928774928775
         ],
-        "cheap_answer": "Driven was a Canadian men's lifestyle magazine, published by publisher Michel Cr\u00e9pault and based on a concept presented and developed by former editor-in-chief Michael La Faive and creative director Laura NCe. It offered a combination of automotive, fashion, technology, travel, and lifestyle content for affluent Canadian men featuring exotic locations and automobiles, becoming the first private FM radio station in India in 2001 and broadcasting on 91.1 megahertz in Mumbai (earlier 91.0), Bengaluru (started in 2004), Luckeno, and New Delhi (since 2003). It was launched as Radio City in Hyderabad in March 2006 and Visakhapatnam on October 2007.",
-        "cheap_confidence": 0.777,
+        "cheap_answer": "Charlotte of the Palaciate is the fourth daughter of Frederick V, Elector Palatine (of the House of Wittelsch), who had refuge in Bohemia, and his consort Elizabeth Stuart.",
+        "cheap_confidence": 0.48,
         "escalated_to_full": true,
-        "full_answer": "The context does not contain information about \"Arthur's Magazine\" or when \"First for Women\" was started. Therefore, I cannot answer the question.",
-        "final_answer": "The context does not contain information about \"Arthur's Magazine\" or when \"First for Women\" was started. Therefore, I cannot answer the question.",
-        "cheap_latency": 1.8720109462738037,
-        "full_latency": 1.4353842735290527
+        "full_answer": "This document does not contain the answer to this question.",
+        "final_answer": "This document does not contain the answer to this question.",
+        "cheap_latency": 1.8103890419006348,
+        "full_latency": 0.979656457901001
+    },
+    {
+        "query": "Cadmium Chloride is slightly soluble in this chemical, it is also called what?",
+        "docs": [
+            "Cadmium chloride is a white crystalline compound of cadmium and chlorine, with the formula CdCl.  It is a hygroscopic solid that is highly soluble in water and slightly soluble in alcohol.  Although it is considered to be ionic, it has considerable covalent character to its bonding.  The crystal structure of cadmium chloride (described below), composed of two-dimensional layers of ions, is a reference for describing other crystal structures.  Also known are CdCl\u2022HO and CdCl\u20225HO. Water blue, also",
+            "Chipmunks in Low Places is a country album written by John Boylan and Andrew Gold and performed by Alvin and the Chipmunks.  It features cover songs as well as original material.  Released on September 29, 1992, the album was certified Platinum by the RIAA, becoming the group's first platinum record and making it the Chipmunks' best-selling album.  The album reached number 21 on the \"Billboard\" 200, becoming their first album to chart in ten years.  The album also managed to peak at No. 6 on \"Bi",
+            "Est\u00e1dio Jos\u00e9 de Melo, sometimes called Stadium Jos\u00e9 de Melo, is a multi-use stadium located in Rio Branco, Brazil.  It is used mostly for football matches and hosts the home matches of Andir\u00e1 Esporte Clube, Atl\u00e9tico Acreano, Independ\u00eancia Futebol Clube, Atl\u00e9tico Clube Juventus, Rio Branco Football Club and Associa\u00e7\u00e3o Desportiva Vasco da Gama.  It also hosted the home matches of Am\u00e9rica-AC The stadium has a maximum capacity of 8,000 people and was built in 1929 (according to some sources, it was "
+        ],
+        "scores": [
+            0.0392156862745098,
+            0.03741258741258741,
+            0.03741258741258741
+        ],
+        "cheap_answer": "Answer: Cadmium chloride is hygroscopic and has considerable covalency to its bonding.",
+        "cheap_confidence": 0.5942857142857143,
+        "escalated_to_full": true,
+        "full_answer": "alcohol",
+        "final_answer": "alcohol",
+        "cheap_latency": 1.1721179485321045,
+        "full_latency": 0.7937030792236328
     }
 ]
