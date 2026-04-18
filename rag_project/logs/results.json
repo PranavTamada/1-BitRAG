@@ -1,42 +1,238 @@
 [
     {
-        "query": " What nationality was James Henry Miller's wife?",
+        "query": "The Dutch-Belgian television series that \"House of Anubis\" was based on first aired in what year?",
+        "ground_truth": "2006",
         "docs": [
-            "James Stuart, 3rd Earl of Moray (1581 \u2013 6 August 1638) was the son of James Stewart, 2nd Earl of Moray and Elizabeth Stuart, 2nd Countess of Moray. Charlotte of the Palatinate (\"Princess Palatine Charlotte\", 19 December 1628 \u2013 14 January 1631), was the fourth daughter of Frederick V, Elector Palatine (of the House of Wittelsbach), the \"Winter King\" of Bohemia, by his consort, the English princess Elizabeth Stuart.  Charlotte was born up in the Dutch Republic, where her family had sought refuge a",
-            "Moloch: or, This Gentile World is a semi-autobiographical novel written by Henry Miller in 1927-28, initially under the guise of a novel written by his wife, June.  The book went unpublished until 1992, 65 years after it was written and 12 years after Miller\u2019s death.  It is widely considered to be of interest more as a study of Miller\u2019s artistic growth than as a worthy piece of fiction. The Launceston by-election of 1874 was fought on 3 July 1874.  The byelection was fought due to the void Elect",
-            "Brigadier Claud Andrew Montagu Douglas Scott, DSO (13 July 1906 \u2013 24 January 1971) was the first child and only son born to Lieutenant Colonel Lord Herbert Andrew Montagu Douglas Scott and Marie Josephine Edwards.  He was a grandson of Sir William Henry Walter Montagu Douglas Scott, 6th Duke of Buccleuch & 8th Duke of Queensberry and Lady Louisa Jane Hamilton, and a paternal first cousin to Lady Alice, Duchess of Gloucester, later known as Princess Alice, Duchess of Gloucester.  He was a materna"
-        ],
-        "scores": [
-            0.038838612368024134,
-            0.038475767665556784,
-            0.03774928774928775
-        ],
-        "cheap_answer": "Charlotte of the Palaciate is the fourth daughter of Frederick V, Elector Palatine (of the House of Wittelsch), who had refuge in Bohemia, and his consort Elizabeth Stuart.",
-        "cheap_confidence": 0.48,
-        "escalated_to_full": true,
-        "full_answer": "This document does not contain the answer to this question.",
-        "final_answer": "This document does not contain the answer to this question.",
-        "cheap_latency": 1.8103890419006348,
-        "full_latency": 0.979656457901001
-    },
-    {
-        "query": "Cadmium Chloride is slightly soluble in this chemical, it is also called what?",
-        "docs": [
-            "Cadmium chloride is a white crystalline compound of cadmium and chlorine, with the formula CdCl.  It is a hygroscopic solid that is highly soluble in water and slightly soluble in alcohol.  Although it is considered to be ionic, it has considerable covalent character to its bonding.  The crystal structure of cadmium chloride (described below), composed of two-dimensional layers of ions, is a reference for describing other crystal structures.  Also known are CdCl\u2022HO and CdCl\u20225HO. Water blue, also",
-            "Chipmunks in Low Places is a country album written by John Boylan and Andrew Gold and performed by Alvin and the Chipmunks.  It features cover songs as well as original material.  Released on September 29, 1992, the album was certified Platinum by the RIAA, becoming the group's first platinum record and making it the Chipmunks' best-selling album.  The album reached number 21 on the \"Billboard\" 200, becoming their first album to chart in ten years.  The album also managed to peak at No. 6 on \"Bi",
-            "Est\u00e1dio Jos\u00e9 de Melo, sometimes called Stadium Jos\u00e9 de Melo, is a multi-use stadium located in Rio Branco, Brazil.  It is used mostly for football matches and hosts the home matches of Andir\u00e1 Esporte Clube, Atl\u00e9tico Acreano, Independ\u00eancia Futebol Clube, Atl\u00e9tico Clube Juventus, Rio Branco Football Club and Associa\u00e7\u00e3o Desportiva Vasco da Gama.  It also hosted the home matches of Am\u00e9rica-AC The stadium has a maximum capacity of 8,000 people and was built in 1929 (according to some sources, it was "
+            "House of Anubis is a mystery television series developed for Nickelodeon based on the Dutch-Belgian television series \"Het Huis Anubis\".  The series was created by Hans Bourlon and Gert Verhulst and premiered on Nickelodeon on 1 January 2011 in the United States and on 25 February 2011 in the United Kingdom.  The series is the first series from the network to be filmed outside the United States and the first telenovela-format series for the network.  The show aired from 1 January 2011 to 17 June 2013.",
+            "Batibot was a Philippine children's television series produced by PCTV and based on \"Sesame Street\".  It was first aired in 1984 on RPN as \"Sesame!\"  and was co-produced by Children's Television Workshop (\"now known as\" Sesame Workshop) but the partnership broke up.  \"Sesame!\"  later aired as \"Batibot\" in 1985, a full Filipino language series.  It aired until 1998 and was aired in at least four television networks.  TV5 later revived the show and aired it from 2010\u20132013.  A mobile app based on the series was released in 2015.",
+            "This article is an episode list for \"House of Anubis\", a mystery/comedy-drama television series broadcast on Nickelodeon."
         ],
         "scores": [
             0.0392156862745098,
-            0.03741258741258741,
+            0.03774928774928775,
+            0.03774928774928775
+        ],
+        "retrieval_gap": 0.001466398525222054,
+        "retrieval_mean": 0.0382380872576951,
+        "retrieval_variance": 4.778499188385367e-07,
+        "cheap_answer": "In ONLY the context below, the DuTCH-BelgiAN television series that \"House of Anubis\" was based on first aired in what year?",
+        "cheap_confidence": 0.88,
+        "routing_reason": [],
+        "escalated_to_full": false,
+        "full_answer": null,
+        "final_answer": "In ONLY the context below, the DuTCH-BelgiAN television series that \"House of Anubis\" was based on first aired in what year?",
+        "cheap_correct": false,
+        "full_correct": false,
+        "adaptive_correct": false,
+        "cheap_latency": 1.6991140842437744,
+        "full_latency": 0.0
+    },
+    {
+        "query": "What is the length of the track where the 2013 Liqui Moly Bathurst 12 Hour was staged?",
+        "ground_truth": "6.213 km long",
+        "docs": [
+            "The 2016 Liqui Moly Bathurst 12 Hour was an endurance race for a variety of GT and touring car classes, including: GT3 cars, GT4 cars and Group 3E Series Production Cars.  The event, which was staged at the Mount Panorama Circuit, near Bathurst, in New South Wales, Australia on 7 February 2016, was the fourteenth running of the Bathurst 12 Hour.  It was also the opening round of the 2016 Intercontinental GT Challenge Series.",
+            "The 2016 Intercontinental GT Challenge was the first season of the Intercontinental GT Challenge.  The season featured three rounds\u00a0\u2014 after the cancellation of the 6 Hours of the Americas - starting with Liqui Moly Bathurst 12 Hour on 7 February and the season concluded with the Sepang 12 Hours on 10 December.",
+            "The Bathurst 12 Hour (currently known as the Liqui Moly Bathurst 12 Hour for sponsorship reasons) is an endurance race for GT and production cars held at the Mount Panorama Circuit, in Bathurst, Australia in February each year.  The race was first held in 1991 for Series Production cars and moved to Sydney's Eastern Creek Raceway in 1995 before being discontinued.  The race was revived in 2007, again for production cars, before adding a new class for GT3 and other GT cars in 2011.  This has led to unprecedented domestic and international exposure for the event.  In all, sixteen races have taken place; fifteen at Mount Panorama and one at Eastern Creek Raceway."
+        ],
+        "scores": [
+            0.038838612368024134,
+            0.03778966131907308,
+            0.03774928774928775
+        ],
+        "retrieval_gap": 0.001048951048951051,
+        "retrieval_mean": 0.038125853812128324,
+        "retrieval_variance": 2.5428405035754335e-07,
+        "cheap_answer": "The question only mentions the track where the 2013 Liqui Moly Bathurst 12 Hour was held, which was at Mount Panoraa Circuit near Bathurst in New South Wales, Australia.",
+        "cheap_confidence": 0.8211111111111111,
+        "routing_reason": [],
+        "escalated_to_full": false,
+        "full_answer": null,
+        "final_answer": "The question only mentions the track where the 2013 Liqui Moly Bathurst 12 Hour was held, which was at Mount Panoraa Circuit near Bathurst in New South Wales, Australia.",
+        "cheap_correct": false,
+        "full_correct": false,
+        "adaptive_correct": false,
+        "cheap_latency": 1.3159260749816895,
+        "full_latency": 0.0
+    },
+    {
+        "query": "Fast Cars, Danger, Fire and Knives includes guest appearances from which hip hop record executive?",
+        "ground_truth": "Jaime Meline",
+        "docs": [
+            "Lord Steppington is the debut studio album by California-based hip hop duo Step Brothers (rapper/producers The Alchemist and Evidence).  The album was released on January 21, 2014 by Rhymesayers Entertainment.  The record was produced entirely by Alchemist and Evidence, and includes guest appearances from Action Bronson, Roc Marciano, Blu, Fashawn, Rakaa, Oh No, Styles P, Domo Genesis and The Whooliganz \u2013 Alchemist's old group which included actor Scott Caan.",
+            "Lights Out Paris is the first studio album by American hip hop artist Sims, a member of Minneapolis indie hip hop collective Doomtree.  It was released July 28, 2005 on Doomtree Records and includes guest appearances from P.O.S, Crescent Moon, and Toki Wright, among others.  The album was re-released with four remixes and five songs from Sims' \"False Hopes Four\" on vinyl in June 2015.",
+            "Jaime Meline (born March 2, 1975), better known by his stage name El-P (shortened from El Producto), is an American hip hop recording artist, record producer, and record executive.  Originally a member of Company Flow, El-P has been a major driving force in alternative hip hop for more than two decades, producing for several notable rappers such as Aesop Rock, Mr. Lif, and Cage, among others."
+        ],
+        "scores": [
+            0.03778966131907308,
+            0.03774928774928775,
+            0.03774928774928775
+        ],
+        "retrieval_gap": 4.0373569785333296e-05,
+        "retrieval_mean": 0.03776274560588286,
+        "retrieval_variance": 3.6222780826915064e-10,
+        "cheap_answer": "In the context given above, Faest Cars, Danger, Fire and Knives includes guest appearances by El-P (aka El Producto), a member of Minnneapolis indie hip hop collective Doomtree Records.",
+        "cheap_confidence": 0.7500000000000001,
+        "routing_reason": [
+            "low_gap",
+            "low_mean"
+        ],
+        "escalated_to_full": true,
+        "full_answer": "There is no information about the album \"Fast Cars, Danger, Fire and Knives\" in the provided context.",
+        "final_answer": "There is no information about the album \"Fast Cars, Danger, Fire and Knives\" in the provided context.",
+        "cheap_correct": false,
+        "full_correct": false,
+        "adaptive_correct": false,
+        "cheap_latency": 1.1917002201080322,
+        "full_latency": 0.3237435817718506
+    },
+    {
+        "query": "Gunmen from Laredo starred which narrator of \"Frontier\"?",
+        "ground_truth": "Walter Darwin Coy",
+        "docs": [
+            "Gunmen from Laredo is a 1959 American western film produced and directed by Wallace MacDonald, which stars Robert Knapp, Maureen Hingert, and Walter Coy.",
+            "Louis Stevens (December 25, 1896 \u2013 September 29, 1963) was an American screenwriter of the silent and sound film eras.  Born on Christmas Day 1896 in Riga, Latvia, Stevens entered the film industry in 1920 when he co-wrote the silent film \"A World of Folly\", with Jane Grogan.  In his over 30-year career he worked on over 40 screenplays, as well as several film shorts and two television series.  Among his more notable films were: contributing to the script of the 1931 version of \"Dracula\", starring Bela Lugosi; co-writing the story for What Price Hollywood?  (1932); the screenplay for the 1940 western, \"Colorado\", directed by Joseph Kane, and starring Roy Rogers; the story for \"Streets of Laredo\" (1949), starring William Holden, Macdonald Carey and William Bendix; 1951's \"The Cimarron Kid\", starring Audie Murphy; and \"Horizons West\" (1952), starring Robert Ryan, Julie Adams, and Rock Hudson.  Stevens' final screenplay was for \"Flaming Frontier\" in 1958, although he did some work on additional dialogue for the 1959 film, \"Desert Desperadoes\".  Stevens also wrote several television episodes, one for \"Cheyenne\", and two for \"Hawkeye and the Last of the Mohicans\", all in 1957.",
+            "The Lone Gunmen are a trio of fictional characters, Richard \"Ringo\" Langly, Melvin Frohike and John Fitzgerald Byers, who appeared in recurring roles on the American television series \"The X-Files\", and who starred in the short-lived spin-off, \"The Lone Gunmen\".  Their name was derived from the Warren Commission's conclusion that Lee Harvey Oswald was solely responsible for the assassination of John F. Kennedy."
+        ],
+        "scores": [
+            0.0392156862745098,
+            0.03774928774928775,
+            0.03774928774928775
+        ],
+        "retrieval_gap": 0.001466398525222054,
+        "retrieval_mean": 0.0382380872576951,
+        "retrieval_variance": 4.778499188385367e-07,
+        "cheap_answer": "Gnmem from Laredo starred in the 1957 television episode \"Desert Despair\" and was one of the fictional characters known as \"The Loone Gunmen.\"",
+        "cheap_confidence": 0.75,
+        "routing_reason": [],
+        "escalated_to_full": false,
+        "full_answer": null,
+        "final_answer": "Gnmem from Laredo starred in the 1957 television episode \"Desert Despair\" and was one of the fictional characters known as \"The Loone Gunmen.\"",
+        "cheap_correct": false,
+        "full_correct": false,
+        "adaptive_correct": false,
+        "cheap_latency": 1.3863532543182373,
+        "full_latency": 0.0
+    },
+    {
+        "query": "Where did the form of music played by Die Rh\u00f6ner S\u00e4uw\u00e4ntzt originate?",
+        "ground_truth": "United States",
+        "docs": [
+            "Bubu music is traditional music played by the Temne people in Sierra Leone.  The music was originally used in witchcraft ceremonies, but later it turned into a popular religious processional style played during Ramadan.  In its folk form, the music is played by blowing on bamboo cane flutes and on metal pipes -often repurposed auto parts.",
+            "Cachi Cachi music, also spelled Kachi Kachi, Kachi-Kachi and Katchi-Katchi, is a term that was coined to refer to music played by Puerto Ricans in Hawaii, when they migrated to Hawaii.  It is a \"variation of dance music found in Hawaii\".  Sometimes cachi cachi \"involves fast, improvised solos\" on the guitar.  The \"influence on Hawai'i endures to this day in the musical form known as \"cachi cachi\" played on the quarto [sic] and derivative of the Puerto Rican jibaro style.\"  \"Jibaro\" means peasant in Spanish.",
+            "Pe\u015frev (pronounced ] in Turkish), \"Pi\u015frev\" ([pi\u0283\u02c8\u027eev] ), \"peshrev,\" or \"pishrev;\" called \"bashraf\" \u0628\u0634\u0631\u0641 in Arabic; is an instrumental form in Turkish classical music.  It is the name of the first piece of music played during a group performance called a fas\u0131l (] ).  It also serves as the penultimate piece of the \"Mevlevi ayini\", ritual music of the Mevlevi order, under the name \"son pe\u015frev\" (final pe\u015frev), preceding \"son semai\".  It usually uses long rhythm cycles, stretching over many measures as opposed to the simpler usul the other major form of instrumental music uses, \"saz semai\"."
+        ],
+        "scores": [
+            0.03812636165577342,
+            0.03746498599439776,
             0.03741258741258741
         ],
-        "cheap_answer": "Answer: Cadmium chloride is hygroscopic and has considerable covalency to its bonding.",
-        "cheap_confidence": 0.5942857142857143,
+        "retrieval_gap": 0.0006613756613756613,
+        "retrieval_mean": 0.03766797835425286,
+        "retrieval_variance": 1.0551522745239834e-07,
+        "cheap_answer": "The form of music played by Die Rh\u00f6ner S\u00e4uw\u00e4ntzt, also known as \"Die Rheinfalken,\" is believed to have originated in Sierrle Leonen. The Temne people in Sierra Leone originally played traditional music using blown ona (bamboo flutes) and metal pipe instruments called kaka-kaka (sometimes written as ka-ka-ka or ka-ke-ka). Over time, the music evolved into a folk form known as cachi cachi, which involves fast, improvised solo performances on the guitar. This form is now played across the Pacific Islands and has also influenced Hawai'i's musical tradition, especially \"cachi caci\" performed on the quarto and derivative of the Puertorican jibaro style. The influence on Hawai'i can be traced back to the Pe\u015frev (pron\u0105nc\u00e9d ) instrumental form in Turkish classical music.",
+        "cheap_confidence": 0.8228571428571428,
+        "routing_reason": [
+            "low_gap",
+            "low_mean"
+        ],
         "escalated_to_full": true,
-        "full_answer": "alcohol",
-        "final_answer": "alcohol",
-        "cheap_latency": 1.1721179485321045,
-        "full_latency": 0.7937030792236328
+        "full_answer": "The context does not mention \"Die Rh\u00f6ner S\u00e4uw\u00e4ntzt\" at all. It only talks about Bubu music, Cachi Cachi music, and Pe\u015frev. Therefore, it is not possible to answer the question based on the provided context.",
+        "final_answer": "The context does not mention \"Die Rh\u00f6ner S\u00e4uw\u00e4ntzt\" at all. It only talks about Bubu music, Cachi Cachi music, and Pe\u015frev. Therefore, it is not possible to answer the question based on the provided context.",
+        "cheap_correct": false,
+        "full_correct": false,
+        "adaptive_correct": false,
+        "cheap_latency": 2.4198341369628906,
+        "full_latency": 0.3563849925994873
+    },
+    {
+        "query": "In which American football game was Malcolm Smith named Most Valuable player?",
+        "ground_truth": "Super Bowl XLVIII",
+        "docs": [
+            "Malcolm Xavier Smith (born July 5, 1989) is an American football linebacker for the San Francisco 49ers of the National Football League (NFL).  Smith played college football at USC.  He was drafted by the Seattle Seahawks in the seventh round of the 2011 NFL Draft.  Smith was named the Most Valuable Player of Super Bowl XLVIII after they defeated the Denver Broncos.",
+            "Stephen Spence Clark (born August 2, 1960) is a former professional American football player who played [[defensive tackle]and offensive guard ] for five seasons for the [[Miami Dolphins]].  He also played on two state championship teams in high school which were a combined (25-1) over two years and was a five team all-American including \"Parade Magazine\", he was also named Most Valuable Player of the state of Utah.  At the University of Utah he was named two time All-WAC defensive tackle, Defensive Most Valuable Player of the Western Athletic Conference and First Team All-American.  He also played in the East-West Shrine Game and was named MVP of the Senior Bowl.  After the Senior Bowl he was drafted by Don Shula and The Miami Dolphins, his second year in the NFL he played both ways in a pre-season game and Coach Shula knew he had a guy that could back up every position on the offensive and defensive line as well as long snap.  He earned a starting position at right guard and played against [[William Perry (American football)|the Fridge]] when the Dolphins beat the Chicago Bears on Monday Night Football to help keep the undefeated Dolphin record intact.  In the NFL, he also played on two Super Bowl teams with the Miami Dolphins and was the starting right guard before being injured.  Just recently Steve was named to the top 100 greatest players in the history of the University of Utah actually being named 9th best of All-Time.",
+            "The 2013 NBA Summer League is a pro basketball league run by the NBA just after the 2013 NBA draft.  It gives newly drafted players a chance to test their skills against each other, and to give them a feel for professional basketball.  All 30 NBA teams participated, along with the D-League Select.  The Miami Heat were the only team to participate in both Summer Leagues.  It ran from July 7\u201312 in Orlando and July 12\u201322 in Las Vegas.  Jeremy Lamb of the Oklahoma City Thunder was named the Most Valuable Player of the Orlando Summer League.  Jonas Valan\u010di\u016bnas of the Toronto Raptors went on to be named the Most Valuable Player of the Las Vegas Summer League.  Ian Clark of the Golden State Warriors was named the Most Valuable Player of the Las Vegas Summer League Championship Game."
+        ],
+        "scores": [
+            0.0392156862745098,
+            0.038461538461538464,
+            0.0373864430468204
+        ],
+        "retrieval_gap": 0.0007541478129713397,
+        "retrieval_mean": 0.03835455592762289,
+        "retrieval_variance": 5.634110956227562e-07,
+        "cheap_answer": "Malcolm Xavier Smith (born July 5, 1989) is an American football linebacker for the San Francisco 49ers of the National Football League (NFL). He was drafted by the Seattle Seahawks in the seventh round of the 2011 NFL Draft.",
+        "cheap_confidence": 0.6877777777777778,
+        "routing_reason": [
+            "low_gap",
+            "low_confidence"
+        ],
+        "escalated_to_full": true,
+        "full_answer": "Super Bowl XLVIII.",
+        "final_answer": "Super Bowl XLVIII.",
+        "cheap_correct": false,
+        "full_correct": true,
+        "adaptive_correct": true,
+        "cheap_latency": 1.9286227226257324,
+        "full_latency": 0.25798892974853516
+    },
+    {
+        "query": "What U.S Highway gives access to Zilpo Road, and is also known as Midland Trail?",
+        "ground_truth": "US 60",
+        "docs": [
+            "Zilpo Road is a National Forest Scenic Byway in the forested hills of eastern Kentucky, United States.  The nine mile byway starts south of Morehead, Kentucky and can be accessed by U.S. Highway 60.  The byway travels through the Daniel Boone National Forest and ends on the western shore of Cave Run Lake at the Zilpo Recreation Area.  It follows FSR 918, which is a two lane paved road suitable for all motor vehicles and is usually open throughout the year.",
+            "Arkansas Highway 113 (AR 113 and Hwy.  113) is a north\u2013south state highway that runs in Central Arkansas.  The route runs 29.48 mi from Arkansas Highway 10 to Morrilton.  This also gives access to some rural areas west of Morrilton.  It runs through Pulaski, Perry, and Conway Counties.  It contains no spur of business routes.",
+            "State Route 266 (SR 266) is a state highway in the U.S. state of California.  The route traverses Fish Lake Valley, which is part in California and part in Nevada.  The route connects two Nevada state routes that traverse the Nevada portion of the valley, NV 264 and NV 266.  The only connection from SR\u00a0266 to the rest of California's road network is via SR 168.  Prior to 1986 the southern and northern halves of modern SR 266 had separate numerical designations.  The southern portion of the highway, along with modern SR 168, dates to the auto trail era, forming part of the Midland Trail."
+        ],
+        "scores": [
+            0.038475767665556784,
+            0.03812636165577342,
+            0.03774928774928775
+        ],
+        "retrieval_gap": 0.0003494060097833651,
+        "retrieval_mean": 0.03811713902353932,
+        "retrieval_variance": 8.800470659637342e-08,
+        "cheap_answer": "The nine mile byway starting south of Morehead, Kentucky, and ending on the western shore of Cave Run Lake at the Zilpo Recreaction Area, follows FSR 918, a two-lane paved road suitable for all motor vehicles and is usually open throughout the year. The route runs through Pulaski, Perry, and Conway Counties in Arkansas. It contains no spur of business routes.",
+        "cheap_confidence": 0.5527272727272727,
+        "routing_reason": [
+            "low_gap",
+            "low_confidence"
+        ],
+        "escalated_to_full": true,
+        "full_answer": "U.S. Highway 60 gives access to Zilpo Road, but it is not known as Midland Trail. The Midland Trail is actually associated with SR 168 in California, not U.S. Highway 60.",
+        "final_answer": "U.S. Highway 60 gives access to Zilpo Road, but it is not known as Midland Trail. The Midland Trail is actually associated with SR 168 in California, not U.S. Highway 60.",
+        "cheap_correct": false,
+        "full_correct": false,
+        "adaptive_correct": false,
+        "cheap_latency": 1.474731206893921,
+        "full_latency": 0.3680076599121094
+    },
+    {
+        "query": "The 1988 American comedy film, The Great Outdoors, starred a four-time Academy Award nominee, who received a star on the Hollywood Walk of Fame in what year?",
+        "ground_truth": "2006",
+        "docs": [
+            "Annette Carol Bening (born May 29, 1958) is an American actress.  She began her career on stage with the Colorado Shakespeare Festival company in 1980, and played Lady Macbeth in 1984 at the American Conservatory Theatre.  She was nominated for the 1987 Tony Award for Best Featured Actress in a Play for her Broadway debut in \"Coastal Disturbances\".  She is a four-time Academy Award nominee; for \"The Grifters\" (1990), \"American Beauty\" (1999), \"Being Julia\" (2004) and \"The Kids Are All Right\" (2010).  In 2006, she received a star on the Hollywood Walk of Fame.",
+            "John Carrafa is an American theater and film director/choreographer best known as the two-time Tony Award nominated choreographer of the Broadway musicals \"Urinetown\" and \"Into The Woods\" and the Media Choreography Honors Award winner for the Robert Zemeckis film \"The Polar Express\".",
+            "Charles Clarence Robert Orville Cummings, known as Bob Cummings (June 9, 1910 \u2013 December 2, 1990), was an American film and television actor known mainly for his roles in comedy films such as \"The Devil and Miss Jones\" (1941) and \"Princess O'Rourke\" (1943), but was also effective in dramatic films, especially two of Alfred Hitchcock's thrillers, \"Saboteur\" (1942) and \"Dial M for Murder\" (1954).  Cummings received five Primetime Emmy Award nominations, and won the Primetime Emmy Award for Best Actor in a Single Performance in 1955.  On February 8, 1960, he received two stars on the Hollywood Walk of Fame for his contributions to the motion picture and television industries.  The motion picture star is at 6816 Hollywood Boulevard, the television star is on 1718 Vine Street."
+        ],
+        "scores": [
+            0.038838612368024134,
+            0.03778966131907308,
+            0.03741258741258741
+        ],
+        "retrieval_gap": 0.001048951048951051,
+        "retrieval_mean": 0.03801362036656154,
+        "retrieval_variance": 3.640033563973528e-07,
+        "cheap_answer": "The 1988 American comedy film The Great Outdoors stars a four-time Academy Award nomin\u00e9e and was nominated for two stars on the Hollywood Walk of Fame, one at 6816 Hollywood Boulevard in the category of Television. The other star is on 1718 Vineland Street in the category of Motion Picture.",
+        "cheap_confidence": 0.8211111111111111,
+        "routing_reason": [],
+        "escalated_to_full": false,
+        "full_answer": null,
+        "final_answer": "The 1988 American comedy film The Great Outdoors stars a four-time Academy Award nomin\u00e9e and was nominated for two stars on the Hollywood Walk of Fame, one at 6816 Hollywood Boulevard in the category of Television. The other star is on 1718 Vineland Street in the category of Motion Picture.",
+        "cheap_correct": false,
+        "full_correct": true,
+        "adaptive_correct": false,
+        "cheap_latency": 1.638279676437378,
+        "full_latency": 0.0
     }
 ]

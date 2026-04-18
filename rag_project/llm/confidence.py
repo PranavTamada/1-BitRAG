@@ -198,26 +198,14 @@ def compute_retrieval_signals(scores):
 
     return gap, mean, variance
 
-def needs_full_llm(
-    fused_scores,          # list of (doc_index, fused_score) from fuse_scores()
-    llm_confidence,        # float from cheap answerer
-    retrieval_threshold=0.275,
-    confidence_threshold=0.65,
-    top_k=3
-):
-    """
-    Decide whether to escalate to full LLM.
+def needs_full_llm(scores, confidence):
+    gap, mean, var = compute_retrieval_signals(scores)
+
+    ambiguous = gap < 0.0008
+    low_relevance = mean < 0.038
+    uncertain_model = confidence < 0.7
+
+    if ambiguous or low_relevance or uncertain_model:
+        return True
     
-    Uses both retrieval quality and LLM confidence as a combined signal.
-    """
-    # Average the top-k retrieval scores as a quality signal
-    top_scores = [score for score in fused_scores[:top_k]]
-    avg_retrieval_score = compute_retrieval_signals(top_scores)
-
-    retrieval_ok = avg_retrieval_score >= retrieval_threshold
-    confidence_ok = llm_confidence >= confidence_threshold
-
-    # Only skip full LLM if BOTH signals are good
-    escalate = not (retrieval_ok and confidence_ok)
-
-    return escalate
+    return False

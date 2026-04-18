@@ -1,19 +1,22 @@
-import google.generativeai as genai
+from groq import Groq
 import time
 
-<<<<<<< HEAD
-genai.configure(api_key="API_KEY")
-=======
-genai.configure(api_key="YOUR_GEMINI_API_KEY")
->>>>>>> 84feb76983a36598137e54192204b9242e91b9d7
+# Initialize client
+client = Groq(api_key="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")
 
-model = genai.GenerativeModel("gemini-2.5-flash-lite")
+MODEL = "llama-3.3-70b-versatile"  
 
 def run_full_llm(prompt):
     start = time.time()
 
-    response = model.generate_content(prompt)
+    response = client.chat.completions.create(
+        model=MODEL,
+        messages=[
+            {"role": "user", "content": prompt}
+        ],
+        temperature=0
+    )
 
     latency = time.time() - start
 
-    return response.text, latency
+    return response.choices[0].message.content, latency
