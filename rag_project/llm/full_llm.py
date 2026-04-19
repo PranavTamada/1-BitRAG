@@ -2,7 +2,7 @@ from groq import Groq
 import time
 
 # Initialize client
-client = Groq(api_key="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")
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 MODEL = "llama-3.3-70b-versatile"  
 
