@@ -1,0 +1,6 @@
+
+[PUBMEDQA] NEGATIVE FINDING: Post-router (answer-quality features)
+  Train AUC: 0.5000
+  Positive rate: 0.938 (93.8% positive)
+  Note: Answer-quality features carry no signal at 93.8% positive rate; post-router omitted from main comparison.
+  Impact: 'post_only' and the post-routing stage of 'rag_router' are degenerate — all feature coefficients are 0.000 and Train AUC=0.500.

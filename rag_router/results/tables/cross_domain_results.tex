@@ -1,0 +1,16 @@
+\begin{tabular}{llrrrrr}
+\toprule
+dataset & system & bertscore_f1 & rouge_l_f1 & full_llm_fraction & cost_savings_fraction & mean_latency_ms \\
+\midrule
+healthcare_qa & always_cheap & 0.6045 & 0.0028 & 1.0000 & 0.0000 & 0.0000 \\
+healthcare_qa & always_full & 0.7896 & 0.2135 & 1.0000 & 0.0000 & 1111.1845 \\
+healthcare_qa & frugal_gpt & 0.6045 & 0.0028 & 1.0000 & 0.0000 & 0.0000 \\
+healthcare_qa & heuristic_v1 & 0.6045 & 0.0028 & 1.0000 & 0.0000 & 0.0000 \\
+healthcare_qa & rag_router & 0.6125 & 0.0141 & 1.0000 & 0.0000 & 61.5707 \\
+pubmedqa & always_cheap & 0.6108 & 0.0043 & 1.0000 & 0.0000 & 0.0000 \\
+pubmedqa & always_full & 0.7940 & 0.1691 & 1.0000 & 0.0000 & 667.2660 \\
+pubmedqa & frugal_gpt & 0.6108 & 0.0043 & 1.0000 & 0.0000 & 0.0000 \\
+pubmedqa & heuristic_v1 & 0.6108 & 0.0043 & 1.0000 & 0.0000 & 0.0000 \\
+pubmedqa & rag_router & 0.6108 & 0.0043 & 1.0000 & 0.0000 & 0.0000 \\
+\bottomrule
+\end{tabular}

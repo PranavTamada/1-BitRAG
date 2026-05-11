@@ -1,0 +1,13 @@
+\begin{tabular}{lrrrrr}
+\toprule
+system & bertscore_f1 & rouge_l_f1 & full_llm_fraction & cost_savings_fraction & mean_latency_ms \\
+\midrule
+always_cheap & 0.6045 & 0.0028 & 1.0000 & 0.0000 & 0.0000 \\
+always_full & 0.7896 & 0.2135 & 1.0000 & 0.0000 & 1111.1845 \\
+frugal_gpt & 0.6045 & 0.0028 & 1.0000 & 0.0000 & 0.0000 \\
+heuristic_v1 & 0.6045 & 0.0028 & 1.0000 & 0.0000 & 0.0000 \\
+pre_only & 0.6125 & 0.0141 & 1.0000 & 0.0000 & 61.5707 \\
+post_only & 0.6045 & 0.0028 & 1.0000 & 0.0000 & 0.0000 \\
+rag_router & 0.6125 & 0.0141 & 1.0000 & 0.0000 & 61.5707 \\
+\bottomrule
+\end{tabular}
