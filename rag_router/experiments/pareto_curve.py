@@ -9,7 +9,11 @@ Y-axis: BERTScore F1
 Curves plotted:
     - RAG-Router (ours)      [solid blue line]
     - FrugalGPT-style        [dashed orange line]
-    - Heuristic v1           [dashed red line]
+    - RAG-Router         [solid blue]
+    - FrugalGPT          [dashed orange]
+    - Random Routing     [dotted gray]
+    - Always-full        [horizontal green dashed]
+    - Always-cheap       [horizontal red dashed]
     - Random routing         [dotted gray line]
     - Always-full            [horizontal dashed line, upper bound]
     - Always-cheap           [horizontal dashed line, lower bound]
@@ -124,33 +128,6 @@ def build_frugal_pareto(records, cheap_scores, full_scores):
     return points
 
 
-def build_heuristic_v1_pareto(records, cheap_scores, full_scores):
-    """Build v1 heuristic Pareto curve by sweeping confidence thresholds."""
-    from evaluation.baselines import _v1_heuristic_confidence
-
-    thresholds = np.linspace(0.0, 1.0, 51)
-    points = []
-
-    for t in thresholds:
-        adaptive_scores = []
-        full_count = 0
-        for i, rec in enumerate(records):
-            query = rec["query"]
-            cheap_answer = rec.get("cheap_answer", "")
-            confidence = _v1_heuristic_confidence(query, cheap_answer)
-
-            if confidence < t:
-                adaptive_scores.append(full_scores[i])
-                full_count += 1
-            else:
-                adaptive_scores.append(cheap_scores[i])
-
-        accuracy = float(np.mean(adaptive_scores))
-        cost = full_count / len(records)
-        points.append((cost, accuracy))
-
-    return points
-
 
 def build_random_pareto(cheap_scores, full_scores):
     """Build random routing Pareto curve."""
@@ -172,7 +149,6 @@ def build_random_pareto(cheap_scores, full_scores):
 def plot_pareto_curve(
     rag_router_points: list,
     frugal_points: list,
-    heuristic_points: list,
     random_points: list,
     cheap_baseline: float,
     full_baseline: float,
@@ -192,12 +168,6 @@ def plot_pareto_curve(
     accs_fg = [p[1] for p in frugal_points]
     ax.plot(costs_fg, accs_fg, "s--", color="#e65100", linewidth=2,
             markersize=3, label="FrugalGPT-style", alpha=0.85)
-
-    # Heuristic v1 — dashed red
-    costs_hv = [p[0] for p in heuristic_points]
-    accs_hv = [p[1] for p in heuristic_points]
-    ax.plot(costs_hv, accs_hv, "^--", color="#c62828", linewidth=2,
-            markersize=3, label="Heuristic v1", alpha=0.85)
 
     # Random — dotted gray
     costs_rd = [p[0] for p in random_points]
@@ -271,17 +241,13 @@ def run_pareto(dataset_name: str) -> None:
     print("\n  Building FrugalGPT Pareto curve...")
     frugal_points = build_frugal_pareto(records, cheap_scores, full_scores)
 
-    # Heuristic v1 curve
-    print("  Building Heuristic v1 Pareto curve...")
-    heuristic_points = build_heuristic_v1_pareto(records, cheap_scores, full_scores)
-
     # Random curve
     print("  Building Random Routing Pareto curve...")
     random_points = build_random_pareto(cheap_scores, full_scores)
 
     # Generate plot
     plot_pareto_curve(
-        rag_router_points, frugal_points, heuristic_points, random_points,
+        rag_router_points, frugal_points, random_points,
         cheap_baseline, full_baseline, dataset_name,
     )
 
@@ -291,8 +257,6 @@ def run_pareto(dataset_name: str) -> None:
         rows.append({"system": "RAG-Router", "cost": cost, "bertscore_f1": acc})
     for cost, acc in frugal_points:
         rows.append({"system": "FrugalGPT", "cost": cost, "bertscore_f1": acc})
-    for cost, acc in heuristic_points:
-        rows.append({"system": "Heuristic_v1", "cost": cost, "bertscore_f1": acc})
     for cost, acc in random_points:
         rows.append({"system": "Random", "cost": cost, "bertscore_f1": acc})
 

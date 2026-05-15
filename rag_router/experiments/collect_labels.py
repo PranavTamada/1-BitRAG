@@ -15,10 +15,9 @@ This file is the foundation of the entire research paper.
 Run once and cache -- never re-run unless you change the dataset.
 
 Usage:
-    python experiments/collect_labels.py                          # Healthcare QA only
-    python experiments/collect_labels.py --dataset healthcare_qa  # Explicit dataset
-    python experiments/collect_labels.py --dataset pubmedqa       # PubMedQA
+    python experiments/collect_labels.py                          # PubMedQA dataset
     python experiments/collect_labels.py --max-samples 50         # Quick test run
+    python experiments/collect_labels.py --force                  # Wipe existing pubmedqa entries and re-label
 """
 
 import sys
@@ -34,7 +33,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from config import (
     CHEAP_MODEL, FULL_MODEL, TOP_K,
-    BERTSCORE_SUCCESS_THRESHOLD, DATA_DIR, BERTSCORE_MODEL,
+    BERTSCORE_SUCCESS_THRESHOLD, DATA_DIR, BERTSCORE_MODEL,LABEL_MODE, GAP_RATIO,
 )
 from data.loaders import load_dataset_by_name
 from retriever.dense import DenseRetriever
@@ -67,8 +66,8 @@ def compute_bertscore_single(prediction: str, reference: str) -> float:
     return float(F1[0])
 
 
-def collect_labels(dataset_name: str, max_samples: int | None = None) -> None:
-    """Run the full label collection pipeline for a given dataset.
+def collect_labels(max_samples: int | None = None, force: bool = False) -> None:
+    """Run the full label collection pipeline for the pubmedqa dataset.
 
     Steps:
         1. Load dataset
@@ -81,9 +80,10 @@ def collect_labels(dataset_name: str, max_samples: int | None = None) -> None:
         4. Save to data/labeled_routing_data.jsonl
 
     Args:
-        dataset_name: one of "healthcare_qa", "natural_questions", "pubmedqa"
         max_samples: optional cap on number of queries to process
+        force: if True, purge existing pubmedqa entries before re-labeling
     """
+    dataset_name = "pubmedqa"
     print(f"\n{'='*60}")
     print(f"Label Collection: {dataset_name}")
     print(f"{'='*60}")
@@ -104,6 +104,26 @@ def collect_labels(dataset_name: str, max_samples: int | None = None) -> None:
 
     # ── 3. Process each query ─────────────────────────────────────────────
     output_path = DATA_DIR / "labeled_routing_data.jsonl"
+
+    # ── Force mode: strip existing pubmedqa entries so labels are recomputed ──
+    if force and output_path.exists():
+        print(f"  --force: purging existing '{dataset_name}' entries from {output_path.name}...")
+        surviving = []
+        purged = 0
+        with open(output_path, "r", encoding="utf-8") as f_purge:
+            for line in f_purge:
+                if line.strip():
+                    try:
+                        rec = json.loads(line.strip())
+                        if rec.get("dataset") == dataset_name:
+                            purged += 1
+                        else:
+                            surviving.append(line)
+                    except json.JSONDecodeError:
+                        surviving.append(line)
+        with open(output_path, "w", encoding="utf-8") as f_purge:
+            f_purge.writelines(surviving)
+        print(f"  Purged {purged} old '{dataset_name}' records. Kept {len(surviving)} records from other datasets.")
 
     # Load already-processed queries for resume capability
     existing_queries = set()
@@ -174,7 +194,7 @@ def collect_labels(dataset_name: str, max_samples: int | None = None) -> None:
                 prompt = build_summary_prompt(retrieved_pairs, query)
             else:
                 prompt = build_direct_prompt(query)
-
+            full_prompt = prompt
             # ── 3c. Call cheap LLM (cached) ───────────────────────────
             try:
                 cheap_answer, cheap_latency = cached_llm_call(
@@ -185,10 +205,9 @@ def collect_labels(dataset_name: str, max_samples: int | None = None) -> None:
                 cheap_latency = 0.0
 
             # ── 3d. Call full LLM (cached) ────────────────────────────
-            direct_prompt = build_direct_prompt(query)
             try:
                 full_answer, full_latency = cached_llm_call(
-                    FULL_MODEL, direct_prompt, run_full_llm
+                    FULL_MODEL, full_prompt, run_full_llm
                 )
             except Exception as e:
                 full_answer = f"[ERROR] {e}"
@@ -210,9 +229,17 @@ def collect_labels(dataset_name: str, max_samples: int | None = None) -> None:
                 full_bertscore = 0.0
 
             # ── 3f. Assign label ──────────────────────────────────────
-            cheap_succeeds = int(
-                cheap_bertscore >= BERTSCORE_SUCCESS_THRESHOLD
-            )
+            if LABEL_MODE == "gap":
+                # Relative: cheap succeeds only if it is >= GAP_RATIO
+                # of the full model's quality. Measures quality *loss*
+                # from skipping the full model — correct for routing.
+                cheap_succeeds = int(
+                    cheap_bertscore >= full_bertscore * GAP_RATIO
+                )
+            else:  # "absolute" — original behaviour
+                cheap_succeeds = int(
+                    cheap_bertscore >= BERTSCORE_SUCCESS_THRESHOLD
+                )
             cheap_success_count += cheap_succeeds
 
             # ── 3g. Write labeled sample ──────────────────────────────
@@ -224,6 +251,9 @@ def collect_labels(dataset_name: str, max_samples: int | None = None) -> None:
                 "cheap_bertscore": cheap_bertscore,
                 "full_bertscore": full_bertscore,
                 "cheap_succeeds": cheap_succeeds,
+                "bertscore_gap": round(full_bertscore - cheap_bertscore, 6),
+                "label_mode": LABEL_MODE,
+                "gap_ratio_used": GAP_RATIO if LABEL_MODE == "gap" else None,
                 "cheap_latency": cheap_latency,
                 "full_latency": full_latency,
                 "retrieval_features": r_feats,
@@ -243,6 +273,23 @@ def collect_labels(dataset_name: str, max_samples: int | None = None) -> None:
     positive_rate = (
         cheap_success_count / labeled_count if labeled_count > 0 else 0.0
     )
+    all_records = []
+    with open(output_path, "r", encoding="utf-8") as f_diag:
+        for line in f_diag:
+            if line.strip():
+                try: all_records.append(json.loads(line))
+                except: pass
+    this_run = [r for r in all_records if r.get("dataset") == dataset_name]
+    if this_run:
+        cheap_sc = [r.get("cheap_bertscore", 0.0) for r in this_run]
+        full_sc  = [r.get("full_bertscore",  0.0) for r in this_run]
+        gaps     = [r.get("bertscore_gap", round(r.get("full_bertscore", 0.0) - r.get("cheap_bertscore", 0.0), 6)) for r in this_run]
+        print(f"\n  Score diagnostics:")
+        print(f"    Cheap BERTScore : mean={np.mean(cheap_sc):.4f}  std={np.std(cheap_sc):.4f}")
+        print(f"    Full  BERTScore : mean={np.mean(full_sc):.4f}  std={np.std(full_sc):.4f}")
+        print(f"    Gap (full-cheap): mean={np.mean(gaps):.4f}  p25={np.percentile(gaps,25):.4f}  p75={np.percentile(gaps,75):.4f}")
+        print(f"    Gap > 0.02      : {sum(g > 0.02 for g in gaps)}/{len(gaps)} samples")
+        print(f"    Label mode      : {LABEL_MODE}" + (f"  (ratio={GAP_RATIO})" if LABEL_MODE=='gap' else ""))
     summary = {
         "event": "label_collection_complete",
         "dataset": dataset_name,
@@ -271,14 +318,13 @@ if __name__ == "__main__":
         description="Collect routing labels by running both LLMs on dataset queries."
     )
     parser.add_argument(
-        "--dataset", type=str, default="pubmedqa",
-        choices=["natural_questions", "pubmedqa"],
-        help="Which dataset to collect labels for. healthcare_qa removed; use labeled_routing_data.jsonl directly.",
-    )
-    parser.add_argument(
         "--max-samples", type=int, default=None,
         help="Optional cap on number of samples (for quick testing).",
     )
+    parser.add_argument(
+        "--force", action="store_true",
+        help="Purge existing pubmedqa entries from the output file and re-label from scratch.",
+    )
     args = parser.parse_args()
 
-    collect_labels(args.dataset, max_samples=args.max_samples)
+    collect_labels(max_samples=args.max_samples, force=args.force)

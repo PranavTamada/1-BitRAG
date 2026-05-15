@@ -27,7 +27,9 @@ RETRIEVAL_HIT_THRESHOLD = 0.035                 # Minimum score to consider retr
 # ── Routing thresholds (swept in pareto_curve.py) ─────────────────────────────
 DEFAULT_ROUTING_THRESHOLD = 0.5                 # Pre-router confidence threshold
 DEFAULT_CONFIDENCE_THRESHOLD = 0.7              # Post-gen confidence threshold
-BERTSCORE_SUCCESS_THRESHOLD = 0.65              # BERTScore F1 above which cheap LLM "succeeds"
+BERTSCORE_SUCCESS_THRESHOLD = 0.85             # BERTScore F1 above which cheap LLM "succeeds" (used in absolute mode)
+LABEL_MODE = "gap"                        # "absolute": threshold on cheap score; "gap": relative to full score
+GAP_RATIO  = 0.90                             # Cheap must be >= 90% of full quality (10% tolerance). 0.95 caused 86% negative rate.
 
 # ── Evaluation ────────────────────────────────────────────────────────────────
 BERTSCORE_MODEL = "distilbert-base-uncased"     # Use roberta-large for camera-ready

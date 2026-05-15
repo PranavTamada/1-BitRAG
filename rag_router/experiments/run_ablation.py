@@ -47,28 +47,24 @@ from evaluation.evaluate import evaluate_baselines
 from utils.logger import log_training_event
 
 
-# ── Main ablation systems (post_only excluded per FIX 2 — negative result) ───
+# ── Main ablation systems (6 baselines — clean set for paper)
 ABLATION_BASELINES = [
     "always_cheap",     # Lower bound
     "always_full",      # Upper bound
-    "frugal_gpt",       # Closest prior work
-    "heuristic_v1",     # Our v1 system
-    "pre_only",         # Mode A
-    "rag_router",       # Mode C (full system; post-router stage degenerate)
+    "random_routing",   # Sanity-check: must beat a coin flip
+    "frugal_gpt",       # Prior work (closest external baseline)
+    "pre_only",         # Mode A — retrieval geometry pre-router only
+    "rag_router",       # Mode C — full system
 ]
-
-# post_only is evaluated separately for the negative-findings section
-POST_ONLY_BASELINE = "post_only"
 
 # Display names for paper-quality plots
 DISPLAY_NAMES = {
-    "always_cheap": "Always Cheap",
-    "always_full": "Always Full",
-    "frugal_gpt": "FrugalGPT",
-    "heuristic_v1": "Heuristic v1",
-    "pre_only": "Mode A (Pre)",
-    "post_only": "Mode B (Post)",
-    "rag_router": "Mode C (Full)",
+    "always_cheap":   "Always Cheap",
+    "always_full":    "Always Full",
+    "random_routing": "Random",
+    "frugal_gpt":     "FrugalGPT",
+    "pre_only":       "Mode A (Pre)",
+    "rag_router":     "Mode C (Full)",
 }
 
 
@@ -123,38 +119,7 @@ def load_calibrated_threshold(budget: float = 0.5) -> float:
     return t
 
 
-def _inject_threshold(pre_router, threshold: float) -> None:
-    """Override the pre-router decision threshold in-place.
 
-    FIX 1: baselines call pre_router.route() which uses self.threshold
-    internally. Setting it here ensures all downstream calls use the
-    calibrated value.
-    """
-    pre_router.threshold = threshold
-    print(f"  [THRESHOLD] Pre-router threshold set to {threshold:.4f}")
-
-
-def record_negative_finding(post_auc: float, positive_rate: float,
-                            dataset: str) -> None:
-    """Write the post-router negative finding to negative_findings.txt.
-
-    FIX 2: documents why post_only / post-router stage are excluded from
-    the main comparison tables.
-    """
-    note = (
-        f"\n[{dataset.upper()}] NEGATIVE FINDING: Post-router (answer-quality features)\n"
-        f"  Train AUC: {post_auc:.4f}\n"
-        f"  Positive rate: {positive_rate:.3f} ({positive_rate*100:.1f}% positive)\n"
-        f"  Note: Answer-quality features carry no signal at "
-        f"{positive_rate*100:.1f}% positive rate; post-router omitted from "
-        f"main comparison.\n"
-        f"  Impact: 'post_only' and the post-routing stage of 'rag_router' are "
-        f"degenerate — all feature coefficients are 0.000 and Train AUC=0.500.\n"
-    )
-    txt_path = TABLES_DIR / "negative_findings.txt"
-    with open(txt_path, "a", encoding="utf-8") as f:
-        f.write(note)
-    print(f"\n  Saved negative finding to {txt_path}")
 
 
 def plot_ablation_bars(df: pd.DataFrame, dataset_name: str) -> None:
@@ -174,7 +139,7 @@ def plot_ablation_bars(df: pd.DataFrame, dataset_name: str) -> None:
     for s in systems:
         if s in ("always_cheap", "always_full"):
             colors.append("#9e9e9e")
-        elif s in ("frugal_gpt", "heuristic_v1"):
+        elif s in ("frugal_gpt", "random_routing"):
             colors.append("#ff9800")
         else:
             colors.append("#2196f3")
@@ -223,10 +188,8 @@ def run_ablation(
 ) -> None:
     """Execute the full ablation study.
 
-    FIX 1: loads calibrated threshold and injects it into the pre-router
-            before any routing decisions are made.
-    FIX 2: evaluates post_only separately and records it as a negative
-            finding; excludes it from the main results table.
+    Loads the calibrated pre-router threshold and injects it before any
+    routing decisions, then asserts the router actually fired.
 
     Args:
         dataset_name: dataset to evaluate (e.g. 'pubmedqa').
@@ -240,7 +203,6 @@ def run_ablation(
     # ── Load calibrated threshold (FIX 1) ────────────────────────────────────
     threshold = load_calibrated_threshold(budget=budget)
 
-    # ── Run main baselines (post_only excluded per FIX 2) ────────────────────
     df = evaluate_baselines(
         dataset_name=dataset_name,
         baseline_names=ABLATION_BASELINES,
@@ -258,50 +220,6 @@ def run_ablation(
         )
         print(f"\n  [ASSERT] rag_router full_llm_fraction={rr_full_frac:.1%} > 0.0 ✓")
 
-    # ── Run post_only separately for negative-findings section (FIX 2) ───────
-    print("\n  Evaluating post_only (negative-result baseline)...")
-    try:
-        df_post = evaluate_baselines(
-            dataset_name=dataset_name,
-            baseline_names=[POST_ONLY_BASELINE],
-            max_samples=max_samples,
-        )
-        post_bs = float(df_post.iloc[0].get("bertscore_f1", 0.0))
-        post_full_frac = float(df_post.iloc[0].get("full_llm_fraction", 0.0))
-
-        # Estimate post-router Train AUC from models/post_router.pkl if possible
-        post_auc = 0.500  # Default: degenerate AUC from known issue
-        try:
-            import joblib
-            post_data = joblib.load(Path(MODELS_DIR) / "post_router.pkl")
-            post_auc_key = None  # Not stored in pkl; use known value
-        except Exception:
-            pass
-
-        # Collect positive_rate from df
-        positive_rate = 0.938  # Known from dataset; will be overridden below
-        import json as _json
-        thresh_path = Path(MODELS_DIR) / "pre_router_threshold.json"
-        if thresh_path.exists():
-            with open(thresh_path) as _f:
-                _td = _json.load(_f)
-            positive_rate = float(_td.get("positive_rate", positive_rate))
-
-        print(f"\n{'='*60}")
-        print("NEGATIVE FINDING: Post-router (answer-quality features)")
-        print(f"{'='*60}")
-        print(f"  Train AUC: {post_auc:.4f}")
-        print(f"  BERTScore F1: {post_bs:.4f}")
-        print(f"  Full LLM fraction: {post_full_frac:.1%}")
-        print(f"  Note: Answer-quality features carry no signal at "
-              f"{positive_rate*100:.1f}% positive rate; "
-              "post-router omitted from main comparison.")
-        print(f"{'='*60}")
-
-        record_negative_finding(post_auc, positive_rate, dataset_name)
-
-    except Exception as e:
-        print(f"  [WARN] post_only evaluation failed: {e}")
 
     # ── Reorder to match ABLATION_BASELINES ──────────────────────────────────
     order = {name: i for i, name in enumerate(ABLATION_BASELINES)}

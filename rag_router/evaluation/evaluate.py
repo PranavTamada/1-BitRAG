@@ -29,7 +29,7 @@ from pathlib import Path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from config import (
-    DATA_DIR, TABLES_DIR, TOP_K, RANDOM_STATE,
+TABLES_DIR, TOP_K, RANDOM_STATE,
 )
 from data.loaders import load_dataset_by_name
 from retriever.dense import DenseRetriever
@@ -97,7 +97,7 @@ def evaluate_baselines(
         b in baseline_names for b in ["pre_only", "rag_router"]
     )
     needs_post = any(
-        b in baseline_names for b in ["post_only", "rag_router"]
+        b in baseline_names for b in ["rag_router"]
     )
 
     if needs_pre:
@@ -128,7 +128,7 @@ def evaluate_baselines(
             print(f"         Skipping baselines that need post-router.")
             baseline_names = [
                 b for b in baseline_names
-                if b not in ["post_only", "rag_router"]
+                if b not in ["rag_router"]
             ]
 
     # ── Pre-compute retrieval + features for all queries ──────────────────

@@ -39,8 +39,9 @@ from utils.logger import log_training_event
 CROSS_DOMAIN_BASELINES = [
     "always_cheap",
     "always_full",
+    "random_routing",
     "frugal_gpt",
-    "heuristic_v1",
+    "pre_only",
     "rag_router",
 ]
 
