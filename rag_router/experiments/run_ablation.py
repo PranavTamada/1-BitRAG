@@ -47,24 +47,26 @@ from evaluation.evaluate import evaluate_baselines
 from utils.logger import log_training_event
 
 
-# ── Main ablation systems (6 baselines — clean set for paper)
+# ── Main ablation systems (7 baselines — clean set for paper)
 ABLATION_BASELINES = [
-    "always_cheap",     # Lower bound
-    "always_full",      # Upper bound
-    "random_routing",   # Sanity-check: must beat a coin flip
-    "frugal_gpt",       # Prior work (closest external baseline)
-    "pre_only",         # Mode A — retrieval geometry pre-router only
-    "rag_router",       # Mode C — full system
+    "always_cheap",       # Lower bound
+    "always_full",        # Upper bound
+    "random_routing",     # Sanity-check: must beat a coin flip
+    "post_gen_cascade",   # Post-gen cascade (FrugalGPT-inspired, adapted to RAG)
+    "pre_only",           # Mode A — retrieval geometry pre-router only
+    "rag_router",         # Mode C — full system
+    "oracle_routing",     # Theoretical upper bound — always picks better model
 ]
 
 # Display names for paper-quality plots
 DISPLAY_NAMES = {
-    "always_cheap":   "Always Cheap",
-    "always_full":    "Always Full",
-    "random_routing": "Random",
-    "frugal_gpt":     "FrugalGPT",
-    "pre_only":       "Mode A (Pre)",
-    "rag_router":     "Mode C (Full)",
+    "always_cheap":     "Always Cheap",
+    "always_full":      "Always Full",
+    "random_routing":   "Random",
+    "post_gen_cascade": "Post-Gen Cascade",
+    "pre_only":         "Mode A (Pre)",
+    "rag_router":       "Mode C (Full)",
+    "oracle_routing":   "Oracle (Upper Bound)",
 }
 
 
@@ -139,7 +141,7 @@ def plot_ablation_bars(df: pd.DataFrame, dataset_name: str) -> None:
     for s in systems:
         if s in ("always_cheap", "always_full"):
             colors.append("#9e9e9e")
-        elif s in ("frugal_gpt", "random_routing"):
+        elif s in ("post_gen_cascade", "random_routing"):
             colors.append("#ff9800")
         else:
             colors.append("#2196f3")

@@ -40,7 +40,7 @@ CROSS_DOMAIN_BASELINES = [
     "always_cheap",
     "always_full",
     "random_routing",
-    "frugal_gpt",
+    "post_gen_cascade",
     "pre_only",
     "rag_router",
 ]
@@ -121,34 +121,34 @@ def run_cross_domain(
         "n_total_rows": len(combined),
     })
 
-    # Summary: does RAG-Router beat FrugalGPT on each dataset?
+    # Summary: does RAG-Router beat post_gen_cascade on each dataset?
     print(f"\n{'='*80}")
     print("KEY FINDINGS")
     print(f"{'='*80}")
     for ds in datasets:
         ds_data = combined[combined["dataset"] == ds]
         rr = ds_data[ds_data["system"] == "rag_router"]
-        fg = ds_data[ds_data["system"] == "frugal_gpt"]
+        pgc = ds_data[ds_data["system"] == "post_gen_cascade"]
         af = ds_data[ds_data["system"] == "always_full"]
 
-        if rr.empty or fg.empty or af.empty:
+        if rr.empty or pgc.empty or af.empty:
             continue
 
-        rr_f1 = rr["bertscore_f1"].values[0]
-        fg_f1 = fg["bertscore_f1"].values[0]
-        af_f1 = af["bertscore_f1"].values[0]
+        rr_f1  = rr["bertscore_f1"].values[0]
+        pgc_f1 = pgc["bertscore_f1"].values[0]
+        af_f1  = af["bertscore_f1"].values[0]
         rr_cost = rr["full_llm_fraction"].values[0]
 
         retention = rr_f1 / af_f1 if af_f1 > 0 else 0
-        beats_frugal = rr_f1 > fg_f1
+        beats_cascade = rr_f1 > pgc_f1
 
         print(f"\n  {ds}:")
-        print(f"    RAG-Router BERTScore F1:  {rr_f1:.4f}")
-        print(f"    Always-Full BERTScore F1: {af_f1:.4f}")
-        print(f"    Accuracy retention:       {retention:.1%} of always-full")
-        print(f"    Full LLM usage:           {rr_cost:.1%}")
-        print(f"    Beats FrugalGPT:          {'YES' if beats_frugal else 'NO'} "
-              f"({rr_f1:.4f} vs {fg_f1:.4f})")
+        print(f"    RAG-Router BERTScore F1:         {rr_f1:.4f}")
+        print(f"    Always-Full BERTScore F1:        {af_f1:.4f}")
+        print(f"    Accuracy retention:              {retention:.1%} of always-full")
+        print(f"    Full LLM usage:                 {rr_cost:.1%}")
+        print(f"    Beats Post-Gen Cascade:         {'YES' if beats_cascade else 'NO'} "
+              f"({rr_f1:.4f} vs {pgc_f1:.4f})")
 
     print(f"\n{'='*80}")
 

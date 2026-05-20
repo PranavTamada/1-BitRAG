@@ -17,7 +17,9 @@ Research design decisions:
       to produce true probability outputs for threshold sweeping.
 
 Prior work contrast:
-    FrugalGPT: routes based on *post-generation* signals (must call LLM first).
+    Post-Gen Cascade (our baseline): adapts the cascade strategy from
+        FrugalGPT (Chen et al., 2023) to the RAG setting -- routes based
+        on *post-generation* signals (must call cheap LLM first).
     RouteLLM: requires human preference labels (expensive annotation).
     Our pre-router: routes using only retrieval features + query text.
     Zero LLM calls. Zero human annotation. Sub-millisecond inference.

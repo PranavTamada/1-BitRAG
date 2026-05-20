@@ -28,6 +28,11 @@
 | 1-BitRAG v1 | No (post-gen) | No | No (hand-weighted) |
 | **RAG-Router (Ours)** | **Yes** | **No** | **Yes (calibrated)** |
 
+> **Baseline note:** Our *Post-Gen Cascade* baseline adapts FrugalGPT's
+> cascade idea to the RAG setting (all baselines share the same retrieval
+> pipeline; only the routing decision differs). Original FrugalGPT has no
+> retrieval component and is therefore not directly comparable as a system.
+
 ## Architecture
 
 ```
@@ -105,15 +110,15 @@ python experiments/cross_domain.py
 The main claim is validated if:
 - RAG-Router achieves **>= 95%** of always-full BERTScore F1
 - While using **<= 50%** of full LLM calls
-- And beats FrugalGPT at matched cost on **>= 2 of 3** datasets
+- And beats the Post-Gen Cascade baseline at matched cost on **>= 2 of 3** datasets
 
 ```
-Dataset         | System       | BERTScore F1 | Full LLM % | Latency
-----------------|--------------|--------------|------------|--------
-Healthcare QA   | Always-Cheap | 0.XX         | 0%         | XX ms
-Healthcare QA   | Always-Full  | 0.XX         | 100%       | XX ms
-Healthcare QA   | FrugalGPT   | 0.XX         | XX%        | XX ms
-Healthcare QA   | RAG-Router   | 0.XX         | XX%        | XX ms
+Dataset         | System              | BERTScore F1 | Full LLM % | Latency
+----------------|---------------------|--------------|------------|--------
+Healthcare QA   | Always-Cheap        | 0.XX         | 0%         | XX ms
+Healthcare QA   | Always-Full         | 0.XX         | 100%       | XX ms
+Healthcare QA   | Post-Gen Cascade    | 0.XX         | XX%        | XX ms
+Healthcare QA   | RAG-Router          | 0.XX         | XX%        | XX ms
 ```
 
 ## Project Structure

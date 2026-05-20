@@ -13,7 +13,7 @@ Research contribution:
     Each point on the curve corresponds to one threshold value.
     The curve answers: "how much accuracy do you lose per unit of cost savings?"
 
-    The key finding is that RAG-Router's curve dominates the FrugalGPT
+    The key finding is that RAG-Router's curve dominates the Post-Gen Cascade
     and heuristic baselines at every cost point.
 """
 

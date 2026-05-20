@@ -8,6 +8,13 @@ Every other module imports from this file — never hardcode values elsewhere.
 import os
 from pathlib import Path
 
+# Load .env file if present (before any os.getenv calls)
+try:
+    from dotenv import load_dotenv
+    load_dotenv(Path(__file__).resolve().parent / ".env")
+except ImportError:
+    pass  # python-dotenv not installed; rely on OS environment variables
+
 # ── Project root ──────────────────────────────────────────────────────────────
 PROJECT_ROOT = Path(__file__).resolve().parent
 
@@ -15,6 +22,16 @@ PROJECT_ROOT = Path(__file__).resolve().parent
 CHEAP_MODEL = "llama3.2:1b"                     # Ollama model name (locally available)
 FULL_MODEL = "llama-3.3-70b-versatile"          # Groq model name
 EMBEDDING_MODEL = "all-MiniLM-L6-v2"           # SentenceTransformer model
+
+# ── Cost model (for paper tables) ─────────────────────────────────────────────
+# Approximate cost per token for each model tier.
+# Local Ollama models are effectively free; Groq pricing is from their API docs.
+COST_PER_TOKEN = {
+    "llama3.2:1b":                0.0,              # Local inference, zero API cost
+    "llama-3.1-8b-instant":       0.05 / 1_000_000, # $0.05 per 1M tokens (Groq)
+    "llama-3.3-70b-versatile":    0.59 / 1_000_000, # $0.59 per 1M tokens (Groq)
+}
+AVG_TOKENS_PER_QUERY = 500  # Approximate avg tokens (prompt + completion) per query
 
 # ── API keys (loaded from environment / .env) ────────────────────────────────
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
@@ -32,7 +49,7 @@ LABEL_MODE = "gap"                        # "absolute": threshold on cheap score
 GAP_RATIO  = 0.90                             # Cheap must be >= 90% of full quality (10% tolerance). 0.95 caused 86% negative rate.
 
 # ── Evaluation ────────────────────────────────────────────────────────────────
-BERTSCORE_MODEL = "distilbert-base-uncased"     # Use roberta-large for camera-ready
+BERTSCORE_MODEL = "distilbert-base-uncased"     # Switch to "roberta-large" for camera-ready
 BUDGET_FRACTIONS = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 
 # ── Datasets ──────────────────────────────────────────────────────────────────

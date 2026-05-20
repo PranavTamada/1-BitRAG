@@ -6,18 +6,25 @@ The paper's main result table has columns:
     System | BERTScore F1 | Full LLM % | Latency (ms)
 
 Baselines:
-    1. always_cheap   : Always use TinyLlama. Zero API cost. (lower bound)
-    2. always_full    : Always use Llama-3.3-70B. Max cost. (upper bound)
-    3. random_routing : Route randomly at matched cost fraction.
-    4. frugal_gpt     : FrugalGPT-style: always call cheap, escalate if
-                        output length < threshold OR uncertainty detected.
-                        (closest prior work baseline)
-    5. pre_only       : Mode A -- pre-router only, no post-gen check.
-    6. rag_router     : Mode C -- FULL SYSTEM (pre + post routing).
+    1. always_cheap       : Always use cheap LLM. Zero API cost. (lower bound)
+    2. always_full        : Always use full LLM. Max cost. (upper bound)
+    3. random_routing     : Route randomly at matched cost fraction.
+    4. post_gen_cascade   : Post-generation cascade baseline — always call cheap
+                            first, escalate to full LLM if output is short or
+                            contains uncertainty phrases. This adapts the cascade
+                            strategy from FrugalGPT (Chen et al., 2023) to the
+                            RAG setting. Unlike original FrugalGPT (which has no
+                            retrieval), all baselines here share the same RAG
+                            retrieval pipeline; only the routing decision differs.
+    5. pre_only           : Mode A -- pre-router only, no post-gen check.
+    6. rag_router         : Mode C -- FULL SYSTEM (pre + post routing).
+    7. oracle_routing     : Always picks the better model per query. (theoretical upper bound)
 
-Architecture note:
-    All baselines share the same retrieval infrastructure. The ONLY
-    difference is the routing decision logic. This ensures fair comparison.
+Prompt fairness:
+    ALL baselines receive the SAME RAG prompt with retrieved context.
+    The routing decision determines which *model* answers — not which
+    *prompt* is used. This ensures the comparison is about model capacity,
+    not information availability.
 """
 
 import numpy as np
@@ -29,7 +36,6 @@ from config import (
 from llm.cheap_llm import run_cheap_llm
 from llm.full_llm import run_full_llm
 from utils.cache import cached_llm_call
-from utils.prompt import build_direct_prompt
 
 @dataclass
 class BaselineResult:
@@ -39,7 +45,9 @@ class BaselineResult:
     latency: float      
 
 
-# ── Uncertainty detection for FrugalGPT baseline ────────────────────────────
+# ── Uncertainty detection for post-generation cascade baseline ───────────────
+# Adapted from the cascade escalation concept in FrugalGPT (Chen et al., 2023),
+# applied here within a shared RAG retrieval pipeline.
 _FRUGAL_UNCERTAINTY = [
     "i don't know", "i'm not sure", "cannot determine", "unclear",
     "not provided", "no information", "cannot answer",
@@ -47,7 +55,7 @@ _FRUGAL_UNCERTAINTY = [
 
 
 def _frugal_is_uncertain(answer: str) -> bool:
-    """Simple FrugalGPT-style uncertainty heuristic."""
+    """Post-generation uncertainty heuristic for the cascade baseline."""
     lower = answer.lower()
     if len(answer.strip()) < 20:
         return True
@@ -67,9 +75,13 @@ def run_always_cheap(
 def run_always_full(
     query: str, prompt: str, **kwargs
 ) -> BaselineResult:
-    """Baseline 2: Always use the full LLM."""
-    direct = build_direct_prompt(query)
-    answer, latency = cached_llm_call(FULL_MODEL, direct, run_full_llm)
+    """Baseline 2: Always use the full LLM.
+
+    CRITICAL FIX: uses the SAME RAG prompt as cheap LLM (not a bare
+    direct prompt). Both models must receive identical information
+    so that routing compares model capacity, not information access.
+    """
+    answer, latency = cached_llm_call(FULL_MODEL, prompt, run_full_llm)
     return BaselineResult(answer=answer, decision="full", latency=latency)
 
 def run_random_routing(
@@ -86,30 +98,35 @@ def run_random_routing(
         rng = np.random.RandomState(RANDOM_STATE)
 
     if rng.random() < full_fraction:
-        direct = build_direct_prompt(query)
-        answer, latency = cached_llm_call(FULL_MODEL, direct, run_full_llm)
+        answer, latency = cached_llm_call(FULL_MODEL, prompt, run_full_llm)
         return BaselineResult(answer=answer, decision="full", latency=latency)
     else:
         answer, latency = cached_llm_call(CHEAP_MODEL, prompt, run_cheap_llm)
         return BaselineResult(answer=answer, decision="cheap", latency=latency)
 
-def run_frugal_gpt(
+def run_post_gen_cascade(
     query: str, prompt: str, **kwargs
 ) -> BaselineResult:
-    """Baseline 4: FrugalGPT-style -- call cheap first, escalate on uncertainty.
+    """Baseline 4: Post-generation cascade -- call cheap first, escalate on uncertainty.
 
-    This is the closest prior work baseline. Key difference from RAG-Router:
-    FrugalGPT always calls the cheap LLM, then decides. RAG-Router can
-    skip the cheap call entirely via pre-routing.
+    Adapts the cascade strategy from FrugalGPT (Chen et al., 2023) to the RAG
+    setting. The original FrugalGPT operates without retrieval; here, all
+    baselines share the same RAG retrieval pipeline and differ only in routing.
+
+    Escalation condition: cheap answer is short (<20 chars) OR contains
+    common uncertainty phrases (e.g. "I don't know", "cannot determine").
+
+    Key difference from RAG-Router:
+        This baseline always calls the cheap LLM first, then decides.
+        RAG-Router's pre-router can skip the cheap call entirely.
     """
     cheap_answer, cheap_latency = cached_llm_call(
         CHEAP_MODEL, prompt, run_cheap_llm
     )
 
     if _frugal_is_uncertain(cheap_answer):
-        direct = build_direct_prompt(query)
         full_answer, full_latency = cached_llm_call(
-            FULL_MODEL, direct, run_full_llm
+            FULL_MODEL, prompt, run_full_llm
         )
         return BaselineResult(
             answer=full_answer, decision="full",
@@ -134,8 +151,7 @@ def run_pre_only(
     decision, confidence = pre_router.route(feature_vec)
 
     if decision == "full":
-        direct = build_direct_prompt(query)
-        answer, latency = cached_llm_call(FULL_MODEL, direct, run_full_llm)
+        answer, latency = cached_llm_call(FULL_MODEL, prompt, run_full_llm)
         return BaselineResult(answer=answer, decision="full", latency=latency)
     else:
         answer, latency = cached_llm_call(CHEAP_MODEL, prompt, run_cheap_llm)
@@ -166,8 +182,7 @@ def run_rag_router(
 
     if pre_decision == "full":
         # Step 2: Immediate escalation -- no cheap LLM call at all
-        direct = build_direct_prompt(query)
-        answer, latency = cached_llm_call(FULL_MODEL, direct, run_full_llm)
+        answer, latency = cached_llm_call(FULL_MODEL, prompt, run_full_llm)
         return BaselineResult(answer=answer, decision="full", latency=latency)
 
     # Step 3: Generate with cheap LLM
@@ -181,9 +196,8 @@ def run_rag_router(
     )
 
     if escalate:
-        direct = build_direct_prompt(query)
         full_answer, full_latency = cached_llm_call(
-            FULL_MODEL, direct, run_full_llm
+            FULL_MODEL, prompt, run_full_llm
         )
         return BaselineResult(
             answer=full_answer, decision="full",
@@ -196,14 +210,37 @@ def run_rag_router(
     )
 
 
+def run_oracle_routing(
+    query: str, prompt: str,
+    cheap_bertscore: float = 0.0, full_bertscore: float = 0.0,
+    **kwargs
+) -> BaselineResult:
+    """Oracle: always picks the model that scored higher on this query.
+
+    Provides the theoretical upper bound for any router — no real router
+    can outperform this.  Used to contextualise RAG-Router results:
+    "RAG-Router achieves X% of oracle performance."
+
+    Note: this baseline requires pre-computed BERTScores for both models
+    (from labeled_routing_data.jsonl) and cannot be used at inference time.
+    """
+    if cheap_bertscore >= full_bertscore:
+        answer, latency = cached_llm_call(CHEAP_MODEL, prompt, run_cheap_llm)
+        return BaselineResult(answer=answer, decision="cheap", latency=latency)
+    else:
+        answer, latency = cached_llm_call(FULL_MODEL, prompt, run_full_llm)
+        return BaselineResult(answer=answer, decision="full", latency=latency)
+
+
 # ═════════════════════════════════════════════════════════════════════════════
 # Baseline registry
 # ═════════════════════════════════════════════════════════════════════════════
 BASELINE_REGISTRY = {
-    "always_cheap":   run_always_cheap,
-    "always_full":    run_always_full,
-    "random_routing": run_random_routing,
-    "frugal_gpt":     run_frugal_gpt,
-    "pre_only":       run_pre_only,
-    "rag_router":     run_rag_router,
+    "always_cheap":       run_always_cheap,
+    "always_full":        run_always_full,
+    "random_routing":     run_random_routing,
+    "post_gen_cascade":   run_post_gen_cascade,
+    "pre_only":           run_pre_only,
+    "rag_router":         run_rag_router,
+    "oracle_routing":     run_oracle_routing,
 }

@@ -25,7 +25,8 @@ Features extracted (10 total):
                             embeddings (coherent context ⇒ easier query)
 
 Prior work contrast:
-    FrugalGPT (Chen et al., 2023) uses *post-generation* signals.
+    Post-Gen Cascade baseline (FrugalGPT-inspired, adapted to RAG) uses
+    *post-generation* signals -- it must call the cheap LLM first.
     RouteLLM (Ong et al., 2024) uses human preference labels.
     Our features require zero LLM calls and zero human annotation —
     they are computed entirely from the retrieval step.

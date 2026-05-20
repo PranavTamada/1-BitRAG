@@ -29,7 +29,7 @@ from pathlib import Path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from config import (
-TABLES_DIR, TOP_K, RANDOM_STATE,
+TABLES_DIR, TOP_K, RANDOM_STATE, DATA_DIR,
 )
 from data.loaders import load_dataset_by_name
 from retriever.dense import DenseRetriever
@@ -37,7 +37,7 @@ from retriever.sparse import SparseRetriever
 from retriever.retrieve import retrieve
 from features.retrieval_features import extract_retrieval_features, feature_vector
 from features.query_features import extract_query_features, query_feature_vector
-from evaluation.metrics import compute_all_metrics
+from evaluation.metrics import compute_all_metrics, paired_significance_test
 from evaluation.baselines import BASELINE_REGISTRY
 from router.pre_router import PreRouter
 from router.post_router import PostRouter
@@ -166,6 +166,30 @@ def evaluate_baselines(
         q_vec = query_feature_vector(q_feats)
         all_feature_vecs.append(np.concatenate([r_vec, q_vec]))
 
+    # ── Load labeled BERTScores for oracle baseline ───────────────────────
+    labeled_scores = {}  # {query_text: {cheap_bertscore, full_bertscore}}
+    if "oracle_routing" in baseline_names:
+        labeled_path = DATA_DIR / "labeled_routing_data.jsonl"
+        if labeled_path.exists():
+            import json as _json
+            with open(labeled_path, "r", encoding="utf-8") as _f:
+                for _line in _f:
+                    _line = _line.strip()
+                    if not _line:
+                        continue
+                    try:
+                        _rec = _json.loads(_line)
+                        if _rec.get("dataset") == dataset_name:
+                            labeled_scores[_rec["query"]] = {
+                                "cheap_bertscore": _rec.get("cheap_bertscore", 0.0),
+                                "full_bertscore": _rec.get("full_bertscore", 0.0),
+                            }
+                    except Exception:
+                        pass
+            print(f"  Loaded {len(labeled_scores)} labeled BERTScores for oracle baseline")
+        else:
+            print(f"  [WARN] No labeled data found for oracle baseline; oracle will default to full.")
+
     # ── Run each baseline ─────────────────────────────────────────────────
     all_metrics = []
 
@@ -183,6 +207,11 @@ def evaluate_baselines(
             prompt = all_prompts[i]
             fvec = all_feature_vecs[i]
 
+            # Oracle baseline needs pre-computed BERTScores
+            oracle_kwargs = {}
+            if baseline_name == "oracle_routing" and query in labeled_scores:
+                oracle_kwargs = labeled_scores[query]
+
             try:
                 result = baseline_fn(
                     query=query,
@@ -192,6 +221,7 @@ def evaluate_baselines(
                     feature_vec=fvec,
                     full_fraction=0.5,
                     rng=rng,
+                    **oracle_kwargs,
                 )
                 predictions.append(result.answer)
                 decisions.append(result.decision)
@@ -237,6 +267,22 @@ def evaluate_baselines(
     tex_path = TABLES_DIR / f"main_results_{dataset_name}.tex"
     df_display.to_latex(tex_path, index=False, float_format="%.4f")
     print(f"Saved to {tex_path}")
+
+    # ── Paired significance tests ─────────────────────────────────────────
+    # Compare RAG-Router vs always_full (key claim in the paper)
+    rr_metrics = next((m for m in all_metrics if m["system"] == "rag_router"), None)
+    af_metrics = next((m for m in all_metrics if m["system"] == "always_full"), None)
+    if rr_metrics and af_metrics:
+        rr_f1_list = rr_metrics.get("bertscore_f1_list", [])
+        af_f1_list = af_metrics.get("bertscore_f1_list", [])
+        if len(rr_f1_list) == len(af_f1_list) and len(rr_f1_list) > 0:
+            sig_result = paired_significance_test(rr_f1_list, af_f1_list)
+            print(f"\n  Significance (RAG-Router vs Always-Full):")
+            print(f"    Wilcoxon p-value:   {sig_result['p_value']:.4f}")
+            print(f"    Significant (p<.05): {'YES' if sig_result['significant'] else 'NO'}")
+            print(f"    Effect size (r):    {sig_result['effect_size']:.4f}")
+            if 'note' in sig_result:
+                print(f"    Note: {sig_result['note']}")
 
     log_training_event({
         "event": "evaluation_complete",

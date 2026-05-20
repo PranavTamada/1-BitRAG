@@ -33,6 +33,18 @@ from utils.logger import log_training_event
 from features.retrieval_features import feature_vector, RETRIEVAL_FEATURE_NAMES
 from features.query_features import query_feature_vector, QUERY_FEATURE_NAMES
 
+# Canonical feature names in training order
+ALL_FEATURE_NAMES = [
+    # Retrieval geometry features (10)
+    "score_gap", "score_mean", "score_variance", "score_entropy",
+    "top_score", "score_ratio", "low_score_fraction", "retrieval_hit",
+    "bm25_dense_agreement", "context_density",
+    # Query complexity features (8)
+    "query_length", "query_entropy", "has_negation", "has_conditional",
+    "question_count", "has_comparison", "avg_word_length",
+    "named_entity_count",
+]
+
 
 def load_labeled_data(
     dataset_filter: str | None = None,
@@ -189,6 +201,16 @@ def train_pre_routers(X: np.ndarray, y: np.ndarray) -> dict:
             **report,
         })
 
+    # ── SHAP feature importance for GBT ──────────────────────────────────
+    if "gbt" in reports:
+        try:
+            shap_importance = compute_shap_importance(X, reports)
+            if shap_importance:
+                save_feature_importance_comparison(reports, shap_importance)
+        except Exception as e:
+            print(f"  [WARN] SHAP analysis failed: {e}")
+            print(f"         Install shap: pip install shap")
+
     return reports
 
 
@@ -262,6 +284,92 @@ def save_coefficient_table(pre_report: dict) -> None:
     latex_path = TABLES_DIR / "feature_coefficients.tex"
     df.to_latex(latex_path, index=False, float_format="%.4f")
     print(f"  Saved LaTeX table to {latex_path}")
+
+
+def compute_shap_importance(X: np.ndarray, reports: dict) -> dict | None:
+    """Compute SHAP feature importance for the GBT model.
+
+    Research purpose:
+        Logistic regression gives interpretable coefficients directly,
+        but GBT models are opaque. SHAP values provide a principled,
+        model-agnostic feature importance measure that complements the
+        logistic coefficients. Comparing the two confirms whether the
+        same features matter regardless of model family.
+
+    Args:
+        X:       (n, 18) feature matrix (unscaled).
+        reports: dict of training reports from train_pre_routers().
+
+    Returns:
+        dict mapping feature names to mean |SHAP| values, or None on failure.
+    """
+    try:
+        import shap
+    except ImportError:
+        print("  [WARN] shap not installed. Run: pip install shap")
+        return None
+
+    # Load the trained GBT model
+    gbt_router = PreRouter(model_type="gbt")
+    gbt_router.load()
+
+    # SHAP expects the underlying estimator, not the calibrated wrapper
+    model = gbt_router.model
+    if hasattr(model, 'calibrated_classifiers_'):
+        model = model.calibrated_classifiers_[0].estimator
+
+    X_scaled = gbt_router.scaler.transform(X)
+
+    print("\n  Computing SHAP values for GBT model...")
+    explainer = shap.TreeExplainer(model)
+    shap_values = explainer.shap_values(X_scaled)
+
+    importance = np.abs(shap_values).mean(axis=0)
+    shap_dict = dict(zip(ALL_FEATURE_NAMES, importance.tolist()))
+
+    print("\n  SHAP Feature Importance (GBT):")
+    print(f"  {'Feature':<25s} {'Mean |SHAP|':>12s}")
+    print(f"  {'-'*25} {'-'*12}")
+    for name, val in sorted(shap_dict.items(), key=lambda x: abs(x[1]), reverse=True):
+        print(f"  {name:<25s} {val:>12.4f}")
+
+    return shap_dict
+
+
+def save_feature_importance_comparison(
+    reports: dict, shap_importance: dict
+) -> None:
+    """Save a combined table comparing logistic coefficients and SHAP values.
+
+    Research purpose:
+        Table 3 in the paper — shows both interpretability lenses side by side.
+        If the same features rank highly in both, it validates that the feature
+        space genuinely captures routing-relevant signal (not model artifacts).
+    """
+    import pandas as pd
+
+    logistic_coefs = reports.get("logistic", {}).get("feature_coefficients", {})
+
+    rows = []
+    for name in ALL_FEATURE_NAMES:
+        rows.append({
+            "Feature": name,
+            "Logistic_Coefficient": logistic_coefs.get(name, 0.0),
+            "Logistic_Abs_Coefficient": abs(logistic_coefs.get(name, 0.0)),
+            "GBT_SHAP_Importance": shap_importance.get(name, 0.0),
+        })
+
+    df = pd.DataFrame(rows).sort_values("GBT_SHAP_Importance", ascending=False)
+
+    csv_path = TABLES_DIR / "feature_importance_comparison.csv"
+    df.to_csv(csv_path, index=False)
+    print(f"\n  Saved feature importance comparison to {csv_path}")
+
+    tex_path = TABLES_DIR / "feature_importance_comparison.tex"
+    df[["Feature", "Logistic_Coefficient", "GBT_SHAP_Importance"]].to_latex(
+        tex_path, index=False, float_format="%.4f"
+    )
+    print(f"  Saved LaTeX table to {tex_path}")
 
 
 def train_all_routers(dataset_filter: str = None):

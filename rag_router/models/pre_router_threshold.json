@@ -1,5 +1,5 @@
 {
-  "threshold": 0.895959595959596,
-  "positive_rate": 0.9377049180327869,
+  "threshold": 0.7573737373737374,
+  "positive_rate": 0.6347305389221557,
   "method": "platt_f1_minority"
 }

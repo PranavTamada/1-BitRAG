@@ -7,16 +7,12 @@ X-axis: Cost (fraction of full LLM calls = API cost proxy)
 Y-axis: BERTScore F1
 
 Curves plotted:
-    - RAG-Router (ours)      [solid blue line]
-    - FrugalGPT-style        [dashed orange line]
-    - RAG-Router         [solid blue]
-    - FrugalGPT          [dashed orange]
-    - Random Routing     [dotted gray]
-    - Always-full        [horizontal green dashed]
-    - Always-cheap       [horizontal red dashed]
-    - Random routing         [dotted gray line]
-    - Always-full            [horizontal dashed line, upper bound]
-    - Always-cheap           [horizontal dashed line, lower bound]
+    - RAG-Router (ours)          [solid blue line]
+    - Post-Gen Cascade           [dashed orange line]
+      (FrugalGPT-inspired cascade adapted to RAG setting)
+    - Random Routing             [dotted gray line]
+    - Always-full                [horizontal dashed line, upper bound]
+    - Always-cheap               [horizontal dashed line, lower bound]
 
 Expected runtime: ~5-10 min (uses cached LLM responses from collect_labels)
 Expected output:
@@ -25,8 +21,9 @@ Expected output:
     - results/tables/pareto_points.csv
 
 Key research finding:
-    RAG-Router curve should be consistently above FrugalGPT curve,
-    meaning at any given cost budget, RAG-Router achieves higher accuracy.
+    RAG-Router curve should be consistently above the Post-Gen Cascade curve,
+    meaning at any given cost budget, pre-generation routing achieves higher
+    accuracy than post-generation escalation.
 
 Usage:
     python experiments/pareto_curve.py
@@ -90,12 +87,16 @@ def load_labeled_scores(dataset_filter: str | None = None):
     return cheap_scores, full_scores, feature_vecs, records
 
 
-def build_frugal_pareto(records, cheap_scores, full_scores):
-    """Build FrugalGPT Pareto curve by sweeping uncertainty thresholds.
+def build_post_gen_cascade_pareto(records, cheap_scores, full_scores):
+    """Build Post-Gen Cascade Pareto curve by sweeping uncertainty thresholds.
 
-    FrugalGPT-style: always call cheap, escalate if answer is short or
-    contains uncertainty phrases. We sweep the length threshold to
-    generate different cost-accuracy tradeoffs.
+    Adapts the cascade strategy from FrugalGPT (Chen et al., 2023) to the
+    RAG setting: always call cheap LLM first, escalate if the answer is short
+    or contains uncertainty phrases. We sweep the length threshold to generate
+    different cost-accuracy tradeoffs.
+
+    Note: unlike original FrugalGPT, retrieval is always performed first
+    (shared with all baselines); only the post-generation routing differs.
     """
     from evaluation.baselines import _frugal_is_uncertain
 
@@ -163,11 +164,13 @@ def plot_pareto_curve(
     ax.plot(costs_rr, accs_rr, "o-", color="#1565c0", linewidth=2.5,
             markersize=3, label="RAG-Router (Ours)", zorder=5)
 
-    # FrugalGPT — dashed orange
-    costs_fg = [p[0] for p in frugal_points]
-    accs_fg = [p[1] for p in frugal_points]
-    ax.plot(costs_fg, accs_fg, "s--", color="#e65100", linewidth=2,
-            markersize=3, label="FrugalGPT-style", alpha=0.85)
+    # Post-Gen Cascade — dashed orange
+    costs_pgc = [p[0] for p in frugal_points]
+    accs_pgc  = [p[1] for p in frugal_points]
+    ax.plot(costs_pgc, accs_pgc, "s--", color="#e65100", linewidth=2,
+            markersize=3,
+            label="Post-Gen Cascade (FrugalGPT-inspired)",
+            alpha=0.85)
 
     # Random — dotted gray
     costs_rd = [p[0] for p in random_points]
@@ -237,9 +240,9 @@ def run_pareto(dataset_name: str) -> None:
         print(f"    Budget {budget:.0%}: threshold={result.threshold:.3f}, "
               f"accuracy={result.accuracy:.4f}, cost={result.budget_fraction:.1%}")
 
-    # FrugalGPT curve
-    print("\n  Building FrugalGPT Pareto curve...")
-    frugal_points = build_frugal_pareto(records, cheap_scores, full_scores)
+    # Post-Gen Cascade curve
+    print("\n  Building Post-Gen Cascade Pareto curve...")
+    frugal_points = build_post_gen_cascade_pareto(records, cheap_scores, full_scores)
 
     # Random curve
     print("  Building Random Routing Pareto curve...")
@@ -256,7 +259,7 @@ def run_pareto(dataset_name: str) -> None:
     for cost, acc in rag_router_points:
         rows.append({"system": "RAG-Router", "cost": cost, "bertscore_f1": acc})
     for cost, acc in frugal_points:
-        rows.append({"system": "FrugalGPT", "cost": cost, "bertscore_f1": acc})
+        rows.append({"system": "Post-Gen Cascade", "cost": cost, "bertscore_f1": acc})
     for cost, acc in random_points:
         rows.append({"system": "Random", "cost": cost, "bertscore_f1": acc})
 

@@ -42,7 +42,7 @@ from retriever.retrieve import retrieve
 from features.retrieval_features import extract_retrieval_features, feature_vector
 from features.query_features import extract_query_features, query_feature_vector
 from llm.cheap_llm import run_cheap_llm
-from llm.full_llm import run_full_llm
+from llm.full_llm import run_full_llm, AllKeysExhaustedError
 from utils.cache import cached_llm_call
 from utils.prompt import build_summary_prompt, build_direct_prompt
 from utils.logger import log_training_event
@@ -183,6 +183,9 @@ def collect_labels(max_samples: int | None = None, force: bool = False) -> None:
             q_feats = extract_query_features(query)
 
             # ── 3b. Build prompt with retrieved context ───────────────
+            # CRITICAL: both cheap and full LLMs receive the SAME prompt.
+            # This ensures the quality comparison is about model capacity,
+            # not about information access (prompt fairness).
             if result.scores and result.scores[0] > 0:
                 # Build context from retrieved docs + their completions
                 retrieved_pairs = []
@@ -194,7 +197,7 @@ def collect_labels(max_samples: int | None = None, force: bool = False) -> None:
                 prompt = build_summary_prompt(retrieved_pairs, query)
             else:
                 prompt = build_direct_prompt(query)
-            full_prompt = prompt
+
             # ── 3c. Call cheap LLM (cached) ───────────────────────────
             try:
                 cheap_answer, cheap_latency = cached_llm_call(
@@ -205,10 +208,22 @@ def collect_labels(max_samples: int | None = None, force: bool = False) -> None:
                 cheap_latency = 0.0
 
             # ── 3d. Call full LLM (cached) ────────────────────────────
+            # Same prompt as cheap LLM — prompt fairness guarantee.
+            full_answer, full_latency = "", 0.0
             try:
                 full_answer, full_latency = cached_llm_call(
-                    FULL_MODEL, full_prompt, run_full_llm
+                    FULL_MODEL, prompt, run_full_llm
                 )
+            except AllKeysExhaustedError as e:
+                # All API keys are rate-limited — save progress and stop.
+                f_out.flush()
+                print(f"\n\n{'='*60}")
+                print("[STOPPED] All Groq API keys have hit their daily rate limit.")
+                print(f"  Progress saved: {labeled_count} samples written to disk.")
+                print(f"  Re-run tomorrow (or add more keys) to continue.")
+                print(f"  Error: {e}")
+                print(f"{'='*60}\n")
+                break  # Exit the for-loop; summary stats will still print
             except Exception as e:
                 full_answer = f"[ERROR] {e}"
                 full_latency = 0.0
